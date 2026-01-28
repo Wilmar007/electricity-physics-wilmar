@@ -1,0 +1,3167 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ohms Law Learning Lab</title>
+
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* ===============================
+   🎨 THEME VARIABLES
+   =============================== */
+:root{
+  --bg: #070015;
+  --card-dark: #0f172a;
+  --card-light: #ffffff;
+  --text-light: #f8fafc;
+  --text-dark: #0f172a;
+  --accent: #8b5cf6;
+}
+
+/* ===============================
+   🌌 APP BACKGROUND
+   =============================== */
+html, body {
+  background: radial-gradient(circle at top, #12002f, var(--bg));
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text-light);
+}
+
+/* ===============================
+   🟪 DARK MAIN CARDS
+   =============================== */
+.phet-card {
+  background: var(--card-dark);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 0 24px rgba(139,92,246,0.25);
+}
+
+.phet-card h1,
+.phet-card h2,
+.phet-card h3,
+.phet-card h4,
+.phet-card p,
+.phet-card li,
+.phet-card span {
+  color: var(--text-light);
+}
+
+/* ===============================
+   ⬜ LIGHT CARDS (VERY IMPORTANT)
+   =============================== */
+.light-card,
+.light-card * {
+  color: var(--text-dark) !important;
+  text-shadow: none !important;
+}
+
+/* ===============================
+   ⚙️ CONTROL PANELS (LIGHT)
+   =============================== */
+.phet-control-panel {
+  background: #fff7cc !important;
+  border: 2px solid #f59e0b;
+  border-radius: 20px;
+}
+
+.phet-control-panel * {
+  color: var(--text-dark) !important;
+}
+
+/* ===============================
+   📝 QUIZ FIX (CRITICAL)
+   =============================== */
+.quiz-card {
+  background: var(--card-light) !important;
+  border-radius: 20px;
+  border: 2px solid #e5e7eb;
+}
+
+.quiz-card * {
+  color: var(--text-dark) !important;
+}
+
+.quiz-option {
+  background: #f8fafc !important;
+  border: 2px solid #cbd5f5 !important;
+}
+
+.quiz-option:hover {
+  border-color: var(--accent) !important;
+}
+
+.quiz-option.correct {
+  background: #dcfce7 !important;
+  border-color: #22c55e !important;
+}
+
+.quiz-option.incorrect {
+  background: #fee2e2 !important;
+  border-color: #ef4444 !important;
+}
+
+/* ===============================
+   🔘 BUTTONS
+   =============================== */
+.phet-button {
+  border-radius: 16px;
+  font-weight: 800;
+}
+
+/* ===============================
+   📟 METERS / CANVAS
+   =============================== */
+.phet-meter {
+  background: #020617;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+canvas {
+  background: #020617;
+  border-radius: 16px;
+}
+
+/* ===============================
+   🧠 TOPIC HEADERS (VISIBLE)
+   =============================== */
+#topicTitle {
+  color: #f8fafc !important;
+  text-shadow: 0 0 10px rgba(139,92,246,0.8);
+}
+
+#discussionContent > h2,
+#discussionContent > h3,
+#simulationContent > h2,
+#simulationContent > h3,
+#calculatorContent > h2,
+#calculatorContent > h3 {
+  color: #f8fafc !important;
+}
+
+/* ===============================
+   🚫 NO GLOBAL COLOR OVERRIDE
+   =============================== */
+#app * {
+  text-shadow: none;
+}
+/* 🔧 FINAL FIX — DISCUSSION TEXT READABILITY */
+#discussionContent .card,
+#discussionContent .panel,
+#discussionContent .box {
+  background: #fff4ea !important;   /* light readable background */
+}
+
+#discussionContent h1,
+#discussionContent h2,
+#discussionContent h3,
+#discussionContent p,
+#discussionContent li,
+#discussionContent span {
+  color: #1a1a1a !important;        /* force dark text */
+  text-shadow: none !important;
+}
+</style>
+<style>@view-transition { navigation: auto; }</style>
+</head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full overflow-auto" 
+   Main Menu -->
+   <div id="mainMenu" class="min-h-full flex items-center justify-center p-8">
+    <div class="max-w-6xl w-full"><!-- Header -->
+     <div class="text-center mb-12">
+      <div class="inline-block bg-white rounded-full px-8 py-3 mb-4 shadow-lg"><span class="text-2xl">⚡🔬</span>
+      </div>
+      <h1 id="appTitle" class="text-6xl font-black text-white mb-4" style="text-shadow: 4px 4px 0px rgba(0,0,0,0.1);">Ohms Law Learning Lab</h1>
+      <p id="welcomeText" class="text-2xl text-white font-semibold">Interactive Circuit Simulations</p>
+     </div><!-- Topic Cards -->
+     <div class="grid md:grid-cols-3 gap-8 mb-8"><!-- Voltage -->
+      <div class="phet-card p-8 cursor-pointer" onclick="showTopic('voltage')" style="animation: float 3s ease-in-out infinite;">
+       <div class="text-center">
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);">
+         ⚡
+        </div>
+        <h2 class="text-3xl font-black text-gray-800 mb-3">Voltage</h2>
+        <p class="text-gray-600 font-semibold mb-6">Electric Potential &amp; EMF</p>
+        <div class="space-y-2">
+         <div class="bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🔬 Interactive Simulation
+         </div>
+         <div class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-lg py-2 px-4 font-bold text-sm">
+          📝 15 Question Quiz
+         </div>
+         <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🧮 Calculator Tools
+         </div>
+        </div>
+       </div>
+      </div><!-- Current -->
+      <div class="phet-card p-8 cursor-pointer" onclick="showTopic('current')" style="animation: float 3s ease-in-out infinite 0.3s;">
+       <div class="text-center">
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);">
+         🔄
+        </div>
+        <h2 class="text-3xl font-black text-gray-800 mb-3">Current</h2>
+        <p class="text-gray-600 font-semibold mb-6">Flow &amp; Drift Velocity</p>
+        <div class="space-y-2">
+         <div class="bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🔬 Interactive Simulation
+         </div>
+         <div class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-lg py-2 px-4 font-bold text-sm">
+          15 Question Quiz
+         </div>
+         <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🧮 Calculator Tools
+         </div>
+        </div>
+       </div>
+      </div><!-- Resistance -->
+      <div class="phet-card p-8 cursor-pointer" onclick="showTopic('resistance')" style="animation: float 3s ease-in-out infinite 0.6s;">
+       <div class="text-center">
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl" style="background: linear-gradient(135deg, #7f1d1d 0%, #5c0f0f 100%); box-shadow: 0 8px 24px rgba(127, 29, 29, 0.4);">
+         🔌
+        </div>
+        <h2 class="text-3xl font-black text-gray-800 mb-3">Resistance</h2>
+        <p class="text-gray-600 font-semibold mb-6">Ohm's Law &amp; Circuits</p>
+        <div class="space-y-2">
+         <div class="bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🔬 Interactive Simulation
+         </div>
+         <div class="bg-gradient-to-r from-green-100 to-green-200 text-green-800 rounded-lg py-2 px-4 font-bold text-sm">
+          📝 15 Question Quiz
+         </div>
+         <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 rounded-lg py-2 px-4 font-bold text-sm">
+          🧮 Calculator Tools
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Quiz History -->
+     <div class="phet-card p-8">
+      <h3 class="text-2xl font-black text-gray-800 mb-6 flex items-center"><span class="text-3xl mr-3">📊</span> Your Quiz History</h3>
+      <div id="quizHistory" class="space-y-3"></div>
+     </div>
+    </div>
+   </div><!-- Topic View -->
+   <div id="topicView" class="hidden min-h-full p-8">
+    <div class="max-w-7xl mx-auto"><button onclick="showMainMenu()" class="phet-button bg-white text-cyan-600 px-8 py-4 mb-6 text-lg"> ← Back to Menu </button>
+     <div class="phet-card p-8">
+      <h1 id="topicTitle" class="text-5xl font-black text-gray-800 mb-8"></h1><!-- Tab Navigation -->
+      <div class="flex gap-4 mb-8"><button id="simTab" onclick="showTab('simulation')" class="phet-button flex-1 py-4 text-lg bg-gradient-to-r from-red-600 to-red-700 text-white"> 🔬 Simulation </button> <button id="quizTab" onclick="showTab('quiz')" class="phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700"> 📝 Quiz </button> <button id="calcTab" onclick="showTab('calculator')" class="phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700"> 🧮 Calculator </button> <button id="discussTab" onclick="showTab('discussion')" class="phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700"> 💬 Discussion </button>
+      </div><!-- Content Areas -->
+      <div id="simulationContent"></div>
+      <div id="quizContent" class="hidden"></div>
+      <div id="calculatorContent" class="hidden"></div>
+      <div id="discussionContent" class="hidden"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      app_title: "Ohms Law Learning Lab",
+      welcome_text: "Interactive Circuit Simulations"
+    };
+
+    let currentTopic = '';
+    let currentQuizAnswers = [];
+    let quizSubmitted = false;
+    let allRecords = [];
+    let animationFrame = null;
+    let realWorldAnimations = {};
+
+    // Quiz Data
+    const quizData = {
+      voltage: [
+        { q: "Voltage is defined as the electric potential difference between two points.", type: "tf", answer: "true" },
+        { q: "EMF stands for:", type: "mc", options: ["Electric Motor Force", "Electromotive Force", "Electron Magnetic Field", "Energy Mass Formula"], answer: 1 },
+        { q: "What is the SI unit of voltage?", type: "mc", options: ["Ampere", "Ohm", "Volt", "Watt"], answer: 2 },
+        { q: "EMF is the work done by a source in driving a unit charge around a complete circuit.", type: "tf", answer: "true" },
+        { q: "Potential difference and EMF are exactly the same thing.", type: "tf", answer: "false" },
+        { q: "A battery provides:", type: "mc", options: ["Only current", "Only resistance", "EMF to drive current", "Heat energy"], answer: 2 },
+        { q: "Higher voltage always means higher current.", type: "tf", answer: "false" },
+        { q: "Which device measures voltage?", type: "mc", options: ["Ammeter", "Voltmeter", "Ohmmeter", "Wattmeter"], answer: 1 },
+        { q: "Voltage can exist without current flow.", type: "tf", answer: "true" },
+        { q: "In a series circuit, voltage is:", type: "mc", options: ["Same across all components", "Divided among components", "Zero", "Infinite"], answer: 1 },
+        { q: "A 9V battery has an EMF of:", type: "mc", options: ["0V", "4.5V", "9V", "18V"], answer: 2 },
+        { q: "Voltage drop occurs across a resistor when current flows through it.", type: "tf", answer: "true" },
+        { q: "What causes voltage in a battery?", type: "mc", options: ["Magnetic field", "Chemical reactions", "Heat", "Light"], answer: 1 },
+        { q: "Ground or reference point has zero voltage.", type: "tf", answer: "true" },
+        { q: "Voltage is also known as:", type: "mc", options: ["Electric current", "Electric potential", "Electric resistance", "Electric power"], answer: 1 }
+      ],
+      current: [
+        { q: "Electric current is the rate of flow of electric charge.", type: "tf", answer: "true" },
+        { q: "What is the SI unit of current?", type: "mc", options: ["Volt", "Ampere", "Ohm", "Coulomb"], answer: 1 },
+        { q: "Conventional current flows from positive to negative.", type: "tf", answer: "true" },
+        { q: "Electron flow direction is:", type: "mc", options: ["Same as conventional current", "Opposite to conventional current", "Perpendicular to current", "Random"], answer: 1 },
+        { q: "Current (I) = Charge (Q) / Time (t)", type: "tf", answer: "true" },
+        { q: "Drift velocity is:", type: "mc", options: ["Speed of light", "Average velocity of electrons", "Maximum electron speed", "Zero"], answer: 1 },
+        { q: "Higher drift velocity means higher current.", type: "tf", answer: "true" },
+        { q: "Current density (J) is related to:", type: "mc", options: ["Voltage only", "Resistance only", "Current per unit area", "Power"], answer: 2 },
+        { q: "In a series circuit, current is the same everywhere.", type: "tf", answer: "true" },
+        { q: "An ammeter measures:", type: "mc", options: ["Voltage", "Current", "Resistance", "Power"], answer: 1 },
+        { q: "1 Ampere equals 1 Coulomb per second.", type: "tf", answer: "true" },
+        { q: "In a parallel circuit, current:", type: "mc", options: ["Is same in all branches", "Divides among branches", "Is zero", "Is infinite"], answer: 1 },
+        { q: "AC current changes direction periodically.", type: "tf", answer: "true" },
+        { q: "If 10C of charge flows in 2 seconds, current is:", type: "mc", options: ["2A", "5A", "10A", "20A"], answer: 1 },
+        { q: "Current flows only in closed circuits.", type: "tf", answer: "true" }
+      ],
+      resistance: [
+        { q: "Resistance opposes the flow of electric current.", type: "tf", answer: "true" },
+        { q: "What is the SI unit of resistance?", type: "mc", options: ["Ampere", "Volt", "Ohm", "Watt"], answer: 2 },
+        { q: "Ohm's Law states V = I × R.", type: "tf", answer: "true" },
+        { q: "Resistance increases with:", type: "mc", options: ["Shorter wire length", "Larger cross-section", "Higher temperature", "Lower resistivity"], answer: 2 },
+        { q: "Resistivity is a property of the material.", type: "tf", answer: "true" },
+        { q: "Good conductors have:", type: "mc", options: ["High resistivity", "Low resistivity", "No resistivity", "Infinite resistivity"], answer: 1 },
+        { q: "R = ρL/A, where ρ is resistivity, L is length, A is area.", type: "tf", answer: "true" },
+        { q: "In series, total resistance is:", type: "mc", options: ["R1 + R2 + R3", "1/(1/R1 + 1/R2)", "R1 × R2", "R1 / R2"], answer: 0 },
+        { q: "Temperature increase decreases resistance in metals.", type: "tf", answer: "false" },
+        { q: "In parallel, total resistance is:", type: "mc", options: ["R1 + R2", "1/(1/R1 + 1/R2 + ...)", "R1 × R2", "R1 - R2"], answer: 1 },
+        { q: "Ohmic materials have linear I-V curves.", type: "tf", answer: "true" },
+        { q: "A material with non-linear I-V curve is:", type: "mc", options: ["Ohmic", "Non-ohmic", "Perfect conductor", "Insulator"], answer: 1 },
+        { q: "Conductivity is the inverse of resistivity.", type: "tf", answer: "true" },
+        { q: "Which has highest resistance?", type: "mc", options: ["Copper wire", "Aluminum wire", "Iron wire", "Rubber"], answer: 3 },
+        { q: "A longer wire has higher resistance than a shorter one of same material and area.", type: "tf", answer: "true" }
+      ]
+    };
+
+    // Data SDK Handler
+    const dataHandler = {
+      onDataChanged(data) {
+        allRecords = data;
+        renderQuizHistory();
+      }
+    };
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error("Failed to initialize data SDK");
+      }
+    }
+
+    // Element SDK
+    async function onConfigChange(config) {
+      const title = document.getElementById('appTitle');
+      const welcome = document.getElementById('welcomeText');
+      if (title) title.textContent = config.app_title || defaultConfig.app_title;
+      if (welcome) welcome.textContent = config.welcome_text || defaultConfig.welcome_text;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["app_title", config.app_title || defaultConfig.app_title],
+          ["welcome_text", config.welcome_text || defaultConfig.welcome_text]
+        ])
+      });
+    }
+
+    function renderQuizHistory() {
+      const container = document.getElementById('quizHistory');
+      if (!container) return;
+      
+      if (allRecords.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center text-lg">No quiz attempts yet. Start exploring!</p>';
+        return;
+      }
+
+      const sortedRecords = [...allRecords].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      container.innerHTML = sortedRecords.map(record => {
+        const percentage = Math.round((record.score / record.total_questions) * 100);
+        let bgColor = percentage >= 80 ? 'from-green-400 to-green-500' : percentage >= 60 ? 'from-yellow-400 to-yellow-500' : 'from-red-400 to-red-500';
+        
+        return `
+          <div class="flex justify-between items-center bg-gradient-to-r ${bgColor} p-5 rounded-xl text-white shadow-lg">
+            <div>
+              <span class="font-black text-xl">${record.topic.charAt(0).toUpperCase() + record.topic.slice(1)}</span>
+              <span class="ml-3 text-sm opacity-90">${new Date(record.timestamp).toLocaleDateString()}</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="text-3xl font-black">${record.score}/${record.total_questions}</div>
+              <div class="text-xl font-bold">${percentage}%</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showMainMenu() {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+      }
+      document.getElementById('mainMenu').classList.remove('hidden');
+      document.getElementById('topicView').classList.add('hidden');
+    }
+
+    function showTopic(topic) {
+      currentTopic = topic;
+      document.getElementById('mainMenu').classList.add('hidden');
+      document.getElementById('topicView').classList.remove('hidden');
+      
+      const titles = {
+        voltage: '⚡ Voltage - Electric Potential & EMF',
+        current: '🔄 Current - Flow & Drift Velocity',
+        resistance: '🔌 Resistance - Ohm\'s Law & Circuits'
+      };
+      
+      const titleEl = document.getElementById('topicTitle');
+      if (titleEl) titleEl.textContent = titles[topic];
+      showTab('simulation');
+    }
+
+    function showTab(tab) {
+      document.getElementById('simulationContent').classList.add('hidden');
+      document.getElementById('quizContent').classList.add('hidden');
+      document.getElementById('calculatorContent').classList.add('hidden');
+      document.getElementById('discussionContent').classList.add('hidden');
+      
+      const simTab = document.getElementById('simTab');
+      const quizTab = document.getElementById('quizTab');
+      const calcTab = document.getElementById('calcTab');
+      const discussTab = document.getElementById('discussTab');
+      
+      simTab.className = 'phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700';
+      quizTab.className = 'phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700';
+      calcTab.className = 'phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700';
+      discussTab.className = 'phet-button flex-1 py-4 text-lg bg-gray-200 text-gray-700';
+      
+      if (tab === 'simulation') {
+        simTab.className = 'phet-button flex-1 py-4 text-lg bg-gradient-to-r from-red-600 to-red-700 text-white';
+        document.getElementById('simulationContent').classList.remove('hidden');
+        loadSimulation(currentTopic);
+      } else if (tab === 'quiz') {
+        quizTab.className = 'phet-button flex-1 py-4 text-lg bg-gradient-to-r from-green-500 to-green-600 text-white';
+        document.getElementById('quizContent').classList.remove('hidden');
+        loadQuiz(currentTopic);
+      } else if (tab === 'calculator') {
+        calcTab.className = 'phet-button flex-1 py-4 text-lg bg-gradient-to-r from-purple-500 to-purple-600 text-white';
+        document.getElementById('calculatorContent').classList.remove('hidden');
+        loadCalculator(currentTopic);
+      } else if (tab === 'discussion') {
+        discussTab.className = 'phet-button flex-1 py-4 text-lg bg-gradient-to-r from-amber-600 to-amber-700 text-white';
+        document.getElementById('discussionContent').classList.remove('hidden');
+        loadDiscussion(currentTopic);
+      }
+    }
+
+    function loadSimulation(topic) {
+      const simulations = {
+        voltage: createVoltageSimulation(),
+        current: createCurrentSimulation(),
+        resistance: createResistanceSimulation()
+      };
+      
+      document.getElementById('simulationContent').innerHTML = simulations[topic];
+      
+      setTimeout(() => {
+        if (topic === 'voltage') updateVoltageSimulation();
+        if (topic === 'current') updateCurrentSimulation();
+        if (topic === 'resistance') {
+          showResistanceTab('builder');
+          initCircuitBuilder();
+        }
+      }, 100);
+    }
+
+    // Circuit Builder State
+    let circuitComponents = {
+      batteries: [],
+      resistors: [],
+      plainResistors: []
+    };
+    let circuitBuilderAnimationFrame = null;
+
+    function initCircuitBuilder() {
+      // Start with one battery and one resistor
+      circuitComponents.batteries = [{ id: 1, voltage: 9 }];
+      circuitComponents.resistors = [{ id: 1, resistance: 100 }];
+      updateCircuitBuilder();
+    }
+
+    function showResistanceTab(tab) {
+      const builderContent = document.getElementById('circuitBuilderContent');
+      const graphContent = document.getElementById('ivGraphContent');
+      const builderTab = document.getElementById('circuitBuilderTab');
+      const graphTab = document.getElementById('ivGraphTab');
+      
+      if (!builderContent || !graphContent) return;
+      
+      if (tab === 'builder') {
+        builderContent.classList.remove('hidden');
+        graphContent.classList.add('hidden');
+        builderTab.className = 'phet-button flex-1 py-3 text-base bg-gradient-to-r from-red-600 to-red-700 text-white';
+        graphTab.className = 'phet-button flex-1 py-3 text-base bg-gray-200 text-gray-700';
+        updateCircuitBuilder();
+      } else {
+        builderContent.classList.add('hidden');
+        graphContent.classList.remove('hidden');
+        builderTab.className = 'phet-button flex-1 py-3 text-base bg-gray-200 text-gray-700';
+        graphTab.className = 'phet-button flex-1 py-3 text-base bg-gradient-to-r from-red-600 to-red-700 text-white';
+        updateResistanceSimulation();
+      }
+    }
+
+    function addBattery() {
+      const voltageInput = document.getElementById('newBatteryVoltage');
+      if (!voltageInput) return;
+      
+      const voltage = parseFloat(voltageInput.value);
+      if (isNaN(voltage) || voltage < 1 || voltage > 24) {
+        showToast('Please enter voltage between 1-24V', 'warning');
+        return;
+      }
+      
+      const newId = circuitComponents.batteries.length > 0 
+        ? Math.max(...circuitComponents.batteries.map(b => b.id)) + 1 
+        : 1;
+      
+      circuitComponents.batteries.push({ id: newId, voltage });
+      updateCircuitBuilder();
+      showToast(`Battery ${voltage}V added!`, 'success');
+    }
+
+    function addResistor() {
+      const resistorInput = document.getElementById('newResistorValue');
+      if (!resistorInput) return;
+      
+      const resistance = parseFloat(resistorInput.value);
+      if (isNaN(resistance) || resistance < 10 || resistance > 1000) {
+        showToast('Please enter resistance between 10-1000Ω', 'warning');
+        return;
+      }
+      
+      const newId = circuitComponents.resistors.length > 0 
+        ? Math.max(...circuitComponents.resistors.map(r => r.id)) + 1 
+        : 1;
+      
+      circuitComponents.resistors.push({ id: newId, resistance });
+      updateCircuitBuilder();
+      showToast(`💡 Light Bulb ${resistance}Ω added!`, 'success');
+    }
+
+    function addResistor2() {
+      const resistorInput = document.getElementById('newResistorValue2');
+      if (!resistorInput) return;
+      
+      const resistance = parseFloat(resistorInput.value);
+      if (isNaN(resistance) || resistance < 10 || resistance > 1000) {
+        showToast('Please enter resistance between 10-1000Ω', 'warning');
+        return;
+      }
+      
+      const newId = circuitComponents.plainResistors.length > 0 
+        ? Math.max(...circuitComponents.plainResistors.map(r => r.id)) + 1 
+        : 1;
+      
+      circuitComponents.plainResistors.push({ id: newId, resistance });
+      updateCircuitBuilder();
+      showToast(`🔌 Resistor ${resistance}Ω added!`, 'success');
+    }
+
+    function removePlainResistor(id) {
+      circuitComponents.plainResistors = circuitComponents.plainResistors.filter(r => r.id !== id);
+      updateCircuitBuilder();
+      showToast('🔌 Resistor removed', 'success');
+    }
+
+    function removeBattery(id) {
+      circuitComponents.batteries = circuitComponents.batteries.filter(b => b.id !== id);
+      updateCircuitBuilder();
+      showToast('Battery removed', 'success');
+    }
+
+    function removeResistor(id) {
+      circuitComponents.resistors = circuitComponents.resistors.filter(r => r.id !== id);
+      updateCircuitBuilder();
+      showToast('💡 Light bulb removed', 'success');
+    }
+
+    function clearCircuit() {
+      circuitComponents.batteries = [];
+      circuitComponents.resistors = [];
+      circuitComponents.plainResistors = [];
+      updateCircuitBuilder();
+      showToast('Circuit cleared', 'success');
+    }
+
+    function updateCircuitBuilder() {
+      // Calculate totals
+      const totalVoltage = circuitComponents.batteries.reduce((sum, b) => sum + b.voltage, 0);
+      const bulbResistance = circuitComponents.resistors.reduce((sum, r) => sum + r.resistance, 0);
+      const plainResistance = circuitComponents.plainResistors.reduce((sum, r) => sum + r.resistance, 0);
+      const totalResistance = bulbResistance + plainResistance;
+      const current = totalResistance > 0 ? totalVoltage / totalResistance : 0;
+      
+      // Update displays
+      const voltageDisplay = document.getElementById('builderVoltage');
+      const currentDisplay = document.getElementById('builderCurrent');
+      const resistanceDisplay = document.getElementById('builderResistance');
+      
+      if (voltageDisplay) voltageDisplay.textContent = totalVoltage.toFixed(1) + ' V';
+      if (currentDisplay) currentDisplay.textContent = current.toFixed(3) + ' A';
+      if (resistanceDisplay) resistanceDisplay.textContent = totalResistance.toFixed(0) + ' Ω';
+      
+      // Update component list
+      updateComponentList();
+      
+      // Draw circuit
+      drawCircuitBuilder(totalVoltage, totalResistance, current);
+    }
+
+    function updateComponentList() {
+      const listEl = document.getElementById('componentList');
+      if (!listEl) return;
+      
+      if (circuitComponents.batteries.length === 0 && circuitComponents.resistors.length === 0 && circuitComponents.plainResistors.length === 0) {
+        listEl.innerHTML = '<p class="text-gray-500 text-center">No components added yet. Add batteries and resistors to get started!</p>';
+        return;
+      }
+      
+      let html = '';
+      
+      // Batteries
+      circuitComponents.batteries.forEach(battery => {
+        html += `
+          <div class="flex items-center justify-between bg-gradient-to-r from-yellow-100 to-yellow-200 p-3 rounded-lg border-2 border-yellow-400">
+            <div class="flex items-center">
+              <span class="text-2xl mr-3">🔋</span>
+              <span class="font-bold text-gray-800">Battery ${battery.voltage}V</span>
+            </div>
+            <button onclick="removeBattery(${battery.id})" class="phet-button bg-red-500 text-white px-3 py-1 text-sm">
+              🗑️ Remove
+            </button>
+          </div>
+        `;
+      });
+      
+      // Light Bulbs
+      circuitComponents.resistors.forEach(resistor => {
+        html += `
+          <div class="flex items-center justify-between bg-gradient-to-r from-orange-100 to-orange-200 p-3 rounded-lg border-2 border-orange-400">
+            <div class="flex items-center">
+              <span class="text-2xl mr-3">💡</span>
+              <span class="font-bold text-gray-800">Light Bulb ${resistor.resistance}Ω</span>
+            </div>
+            <button onclick="removeResistor(${resistor.id})" class="phet-button bg-red-500 text-white px-3 py-1 text-sm">
+              🗑️ Remove
+            </button>
+          </div>
+        `;
+      });
+      
+      // Plain Resistors
+      circuitComponents.plainResistors.forEach(resistor => {
+        html += `
+          <div class="flex items-center justify-between bg-gradient-to-r from-red-100 to-red-200 p-3 rounded-lg border-2 border-red-400">
+            <div class="flex items-center">
+              <span class="text-2xl mr-3">🔌</span>
+              <span class="font-bold text-gray-800">Resistor ${resistor.resistance}Ω</span>
+            </div>
+            <button onclick="removePlainResistor(${resistor.id})" class="phet-button bg-red-500 text-white px-3 py-1 text-sm">
+              🗑️ Remove
+            </button>
+          </div>
+        `;
+      });
+      
+      listEl.innerHTML = html;
+    }
+
+    function drawCircuitBuilder(totalVoltage, totalResistance, current) {
+      const canvas = document.getElementById('circuitBuilderCanvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      // Background (darker to see bulbs better)
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 0, w, h);
+      
+      if (circuitComponents.batteries.length === 0 && circuitComponents.resistors.length === 0 && circuitComponents.plainResistors.length === 0) {
+        // Show empty state
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Add components to build your circuit!', w / 2, h / 2);
+        return;
+      }
+      
+      // LINEAR LAYOUT like JavaLab
+      const topY = 80;
+      const bottomY = h - 80;
+      const leftX = 50;
+      const rightX = w - 50;
+      
+      // Draw wires
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 6;
+      
+      // Top wire
+      ctx.beginPath();
+      ctx.moveTo(leftX, topY);
+      ctx.lineTo(rightX, topY);
+      ctx.stroke();
+      
+      // Bottom wire
+      ctx.beginPath();
+      ctx.moveTo(leftX, bottomY);
+      ctx.lineTo(rightX, bottomY);
+      ctx.stroke();
+      
+      // Left connecting wire
+      ctx.beginPath();
+      ctx.moveTo(leftX, topY);
+      ctx.lineTo(leftX, bottomY);
+      ctx.stroke();
+      
+      // Right connecting wire
+      ctx.beginPath();
+      ctx.moveTo(rightX, topY);
+      ctx.lineTo(rightX, bottomY);
+      ctx.stroke();
+      
+      // Calculate component positions
+      const batteryCount = circuitComponents.batteries.length;
+      const bulbCount = circuitComponents.resistors.length;
+      const resistorCount = circuitComponents.plainResistors.length;
+      
+      // Draw batteries on LEFT side (vertical stack)
+      if (batteryCount > 0) {
+        const batterySpacing = (bottomY - topY) / (batteryCount + 1);
+        circuitComponents.batteries.forEach((battery, index) => {
+          const y = topY + batterySpacing * (index + 1);
+          drawBatteryComponentLinear(ctx, leftX, y, battery.voltage);
+        });
+      }
+      
+      // Draw plain resistors on TOP (horizontal row) - left side FIRST
+      if (resistorCount > 0) {
+        const availableWidth = (rightX - leftX - 100) / 2; // Half the space for resistors
+        const resistorSpacing = availableWidth / (resistorCount + 1);
+        circuitComponents.plainResistors.forEach((resistor, index) => {
+          const x = leftX + 50 + resistorSpacing * (index + 1);
+          drawPlainResistorComponentLinear(ctx, x, topY, resistor.resistance);
+        });
+      }
+      
+      // Draw light bulbs on TOP (horizontal row) - right side AFTER resistors
+      if (bulbCount > 0) {
+        const availableWidth = (rightX - leftX - 100) / 2; // Half the space for bulbs
+        const centerX = leftX + (rightX - leftX) / 2;
+        const bulbSpacing = availableWidth / (bulbCount + 1);
+        circuitComponents.resistors.forEach((resistor, index) => {
+          const x = centerX + 50 + bulbSpacing * (index + 1);
+          drawLightBulbComponentLinear(ctx, x, topY, resistor.resistance, current);
+        });
+      }
+      
+      // Draw animated electrons flowing through circuit
+      if (current > 0) {
+        const time = Date.now() / 1000;
+        const speed = Math.min(current * 3 + 0.5, 8);
+        const electronCount = Math.min(Math.floor(current * 15) + 5, 25);
+        
+        for (let i = 0; i < electronCount; i++) {
+          const progress = ((time * speed + i / electronCount) % 1);
+          
+          // Calculate position along circuit path
+          let x, y;
+          const totalPath = (rightX - leftX) * 2 + (bottomY - topY) * 2;
+          const currentDist = progress * totalPath;
+          
+          if (currentDist < (rightX - leftX)) {
+            // Top wire (left to right)
+            x = leftX + currentDist;
+            y = topY;
+          } else if (currentDist < (rightX - leftX) + (bottomY - topY)) {
+            // Right wire (top to bottom)
+            x = rightX;
+            y = topY + (currentDist - (rightX - leftX));
+          } else if (currentDist < (rightX - leftX) * 2 + (bottomY - topY)) {
+            // Bottom wire (right to left)
+            x = rightX - (currentDist - (rightX - leftX) - (bottomY - topY));
+            y = bottomY;
+          } else {
+            // Left wire (bottom to top)
+            x = leftX;
+            y = bottomY - (currentDist - (rightX - leftX) * 2 - (bottomY - topY));
+          }
+          
+          // Draw electron
+          ctx.fillStyle = '#3b82f6';
+          ctx.shadowColor = '#3b82f6';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.arc(x, y, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      }
+      
+      // Draw circuit info box
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+      ctx.fillRect(w / 2 - 120, h / 2 - 60, 240, 120);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(w / 2 - 120, h / 2 - 60, 240, 120);
+      
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 18px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Circuit Values', w / 2, h / 2 - 35);
+      
+      ctx.font = 'bold 16px Arial';
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText(`Voltage: ${totalVoltage.toFixed(1)}V`, w / 2, h / 2 - 5);
+      
+      ctx.fillStyle = '#60a5fa';
+      ctx.fillText(`Current: ${current.toFixed(3)}A`, w / 2, h / 2 + 20);
+      
+      ctx.fillStyle = '#f87171';
+      ctx.fillText(`Resistance: ${totalResistance.toFixed(0)}Ω`, w / 2, h / 2 + 45);
+      
+      // Continue animation
+      if (document.getElementById('circuitBuilderCanvas')) {
+        circuitBuilderAnimationFrame = requestAnimationFrame(() => drawCircuitBuilder(totalVoltage, totalResistance, current));
+      }
+    }
+
+    function drawBatteryComponentLinear(ctx, x, y, voltage) {
+      // Draw battery symbol (vertical orientation on left side)
+      const batteryWidth = 60;
+      const batteryHeight = 30;
+      
+      // Battery body background
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(x - batteryWidth / 2, y - batteryHeight / 2, batteryWidth, batteryHeight);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - batteryWidth / 2, y - batteryHeight / 2, batteryWidth, batteryHeight);
+      
+      // Positive terminal (right side - towards top)
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(x + batteryWidth / 2, y - 8, 15, 16);
+      
+      // Negative terminal (left side - towards bottom)
+      ctx.fillStyle = '#1e40af';
+      ctx.fillRect(x - batteryWidth / 2 - 15, y - 8, 15, 16);
+      
+      // Voltage label
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(voltage + 'V', x, y + 5);
+      
+      // +/- symbols
+      ctx.font = 'bold 20px Arial';
+      ctx.fillStyle = '#dc2626';
+      ctx.fillText('+', x + batteryWidth / 2 + 7, y + 6);
+      ctx.fillStyle = '#1e40af';
+      ctx.fillText('-', x - batteryWidth / 2 - 7, y + 6);
+    }
+
+    function drawLightBulbComponentLinear(ctx, x, y, resistance, current) {
+      // Calculate brightness based on power (P = I²R)
+      const power = current * current * resistance;
+      // Normalize brightness (0 to 1) - assume max power around 5W for good brightness
+      const brightness = Math.min(power / 5, 1);
+      
+      // Glow effect (larger when brighter)
+      if (brightness > 0.1) {
+        const glowRadius = 35 + brightness * 50;
+        const gradient = ctx.createRadialGradient(x, y, 10, x, y, glowRadius);
+        gradient.addColorStop(0, `rgba(255, 220, 100, ${brightness * 0.9})`);
+        gradient.addColorStop(0.5, `rgba(255, 200, 80, ${brightness * 0.5})`);
+        gradient.addColorStop(1, 'rgba(255, 180, 60, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Glass bulb outline
+      ctx.strokeStyle = brightness > 0.3 ? '#fbbf24' : '#94a3b8';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(x, y, 30, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // Bulb fill (gets yellower when brighter)
+      const red = 255;
+      const green = Math.floor(220 - brightness * 50);
+      const blue = Math.floor(100 - brightness * 80);
+      ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${0.3 + brightness * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(x, y, 30, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Filament inside (glows brighter with more current)
+      ctx.strokeStyle = brightness > 0.5 ? '#fff' : brightness > 0.2 ? '#fbbf24' : '#78716c';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = brightness > 0.3 ? '#fbbf24' : 'transparent';
+      ctx.shadowBlur = brightness * 25;
+      
+      ctx.beginPath();
+      // Zigzag filament
+      for (let i = 0; i < 5; i++) {
+        const fx = x + (i - 2) * 5;
+        const fy = y + (i % 2 === 0 ? -10 : 10);
+        if (i === 0) ctx.moveTo(fx, fy);
+        else ctx.lineTo(fx, fy);
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      
+      // Shine effect when bright
+      if (brightness > 0.4) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${brightness * 0.8})`;
+        ctx.beginPath();
+        ctx.arc(x - 10, y - 10, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Bulb base (screw base at bottom)
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(x - 12, y + 30, 24, 18);
+      ctx.strokeStyle = '#6b7280';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x - 12, y + 30, 24, 18);
+      
+      // Base threads
+      ctx.strokeStyle = '#4b5563';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x - 12, y + 33 + i * 5);
+        ctx.lineTo(x + 12, y + 33 + i * 5);
+        ctx.stroke();
+      }
+      
+      // Label below bulb
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 4;
+      ctx.fillText(resistance + 'Ω', x, y + 65);
+      
+      // Brightness indicator
+      const brightnessPercent = Math.round(brightness * 100);
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText(brightnessPercent + '%', x, y + 78);
+      ctx.shadowBlur = 0;
+    }
+
+    function drawPlainResistorComponentLinear(ctx, x, y, resistance) {
+      // Resistor body
+      ctx.fillStyle = '#9ca3af';
+      ctx.fillRect(x - 25, y - 12, 50, 24);
+      
+      ctx.strokeStyle = '#6b7280';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - 25, y - 12, 50, 24);
+      
+      // Color bands (resistor color code)
+      const bands = [
+        { pos: -15, color: '#8b4513' },  // Brown
+        { pos: -5, color: '#000' },      // Black
+        { pos: 5, color: '#dc2626' },    // Red
+        { pos: 15, color: '#fbbf24' }    // Gold
+      ];
+      
+      bands.forEach(band => {
+        ctx.fillStyle = band.color;
+        ctx.fillRect(x + band.pos - 2, y - 12, 4, 24);
+      });
+      
+      // Leads (wires)
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 3;
+      
+      ctx.beginPath();
+      ctx.moveTo(x - 25, y);
+      ctx.lineTo(x - 35, y);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(x + 25, y);
+      ctx.lineTo(x + 35, y);
+      ctx.stroke();
+      
+      // Label
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 4;
+      ctx.fillText(resistance + 'Ω', x, y + 40);
+      ctx.shadowBlur = 0;
+    }
+
+    function createVoltageSimulation() {
+      return `
+        <div class="grid lg:grid-cols-3 gap-6">
+          
+          <!-- Control Panel -->
+          <div class="lg:col-span-1">
+            <!-- Instructions -->
+            <div class="phet-control-panel p-6 mb-6" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+              <h3 class="text-2xl font-black text-gray-800 mb-4 flex items-center">
+                <span class="text-3xl mr-3">📖</span>
+                How to Use
+              </h3>
+              <ol class="space-y-3 text-sm text-gray-800 font-semibold">
+                <li class="flex items-start">
+                  <span class="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">1</span>
+                  <span>Move the <strong>Battery Voltage</strong> slider to change the EMF</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">2</span>
+                  <span>Adjust the <strong>Load Resistance</strong> slider</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">3</span>
+                  <span>Watch the circuit animation and see current arrows flow</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">4</span>
+                  <span>Check the digital meters below for live readings</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">5</span>
+                  <span>Click 💬 Discussion to learn what voltage really means!</span>
+                </li>
+              </ol>
+            </div>
+            
+            <div class="phet-control-panel p-6">
+              <h3 class="text-2xl font-black text-gray-800 mb-6">⚙️ Controls</h3>
+              
+              <div class="space-y-6">
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Battery Voltage (EMF)
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="1" max="24" value="9" step="0.5" 
+                           class="phet-slider flex-1" 
+                           style="background: linear-gradient(to right, #dc2626, #b91c1c);"
+                           oninput="updateVoltageSimulation()">
+                    <span id="voltageValue" class="text-2xl font-black text-red-600 w-20">9 V</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Load Resistance
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="10" max="1000" value="100" step="10" 
+                           class="phet-slider flex-1" 
+                           oninput="updateVoltageSimulation()"
+                           style="background: linear-gradient(to right, #f59e0b, #d97706);">
+                    <span id="loadResistance" class="text-2xl font-black text-orange-600 w-20">100 Ω</span>
+                  </div>
+                </div>
+                
+                <button onclick="resetVoltageSimulation()" class="phet-button w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3">
+                  🔄 Reset
+                </button>
+              </div>
+            </div>
+            
+            <!-- Info Panel -->
+            <div class="phet-control-panel p-6 mt-6" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #dc2626;">
+              <h4 class="font-black text-lg mb-3 text-gray-800">💡 Key Concepts</h4>
+              <ul class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start">
+                  <span class="mr-2">⚡</span>
+                  <span>EMF provides energy per unit charge</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">🔋</span>
+                  <span>Voltage drop = EMF in ideal circuit</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">🔄</span>
+                  <span>Current flows due to potential difference</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Visualization -->
+          <div class="lg:col-span-2">
+            <canvas id="voltageCanvas" width="700" height="500" class="phet-canvas w-full"></canvas>
+            
+            <!-- Meters -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">EMF</div>
+                <div id="emfDisplay" class="text-3xl font-black glow-text">9.0 V</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Current</div>
+                <div id="currentDisplay" class="text-3xl font-black glow-text" style="color: #f59e0b;">0.090 A</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Voltage Drop</div>
+                <div id="vdropDisplay" class="text-3xl font-black glow-text" style="color: #fbbf24;">9.0 V</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      `;
+    }
+
+    function createCurrentSimulation() {
+      return `
+        <div class="grid lg:grid-cols-3 gap-6">
+          
+          <!-- Control Panel -->
+          <div class="lg:col-span-1">
+            <!-- Instructions -->
+            <div class="phet-control-panel p-6 mb-6" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+              <h3 class="text-2xl font-black text-gray-800 mb-4 flex items-center">
+                <span class="text-3xl mr-3">📖</span>
+                How to Use
+              </h3>
+              <ol class="space-y-3 text-sm text-gray-800 font-semibold">
+                <li class="flex items-start">
+                  <span class="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">1</span>
+                  <span>Adjust the <strong>Applied Voltage</strong> slider</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">2</span>
+                  <span>Change the <strong>Wire Resistance</strong></span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">3</span>
+                  <span>Watch red electrons flow through the wire!</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">4</span>
+                  <span>Notice: Electrons go LEFT, but current goes RIGHT</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-amber-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">5</span>
+                  <span>Higher voltage = faster electron movement!</span>
+                </li>
+              </ol>
+            </div>
+            
+            <div class="phet-control-panel p-6">
+              <h3 class="text-2xl font-black text-gray-800 mb-6">⚙️ Controls</h3>
+              
+              <div class="space-y-6">
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Applied Voltage
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="0" max="12" value="5" step="0.5" 
+                           class="phet-slider flex-1" 
+                           style="background: linear-gradient(to right, #dc2626, #b91c1c);"
+                           oninput="updateCurrentSimulation()">
+                    <span id="appliedVoltage" class="text-2xl font-black text-red-600 w-20">5.0 V</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Wire Resistance
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="10" max="200" value="50" step="5" 
+                           class="phet-slider flex-1" 
+                           oninput="updateCurrentSimulation()"
+                           style="background: linear-gradient(to right, #f59e0b, #d97706);">
+                    <span id="wireResistance" class="text-2xl font-black text-orange-600 w-20">50 Ω</span>
+                  </div>
+                </div>
+                
+                <button onclick="resetCurrentSimulation()" class="phet-button w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3">
+                  🔄 Reset
+                </button>
+              </div>
+            </div>
+            
+            <!-- Info Panel -->
+            <div class="phet-control-panel p-6 mt-6" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+              <h4 class="font-black text-lg mb-3 text-gray-800">💡 Key Concepts</h4>
+              <ul class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start">
+                  <span class="mr-2">⚡</span>
+                  <span>Current = Charge / Time</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">🔄</span>
+                  <span>Conventional current: + to -</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">🔴</span>
+                  <span>Electrons flow opposite direction</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Visualization -->
+          <div class="lg:col-span-2">
+            <canvas id="currentCanvas" width="700" height="450" class="phet-canvas w-full"></canvas>
+            
+            <!-- Meters -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Current</div>
+                <div id="currentValue" class="text-3xl font-black glow-text">0.100 A</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Charge (10s)</div>
+                <div id="chargeFlow" class="text-3xl font-black glow-text" style="color: #f59e0b;">1.00 C</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Drift Speed</div>
+                <div id="driftVelocity" class="text-2xl font-black glow-text" style="color: #fbbf24;">MEDIUM</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      `;
+    }
+
+    function createResistanceSimulation() {
+      return `
+        <div class="space-y-6">
+          
+          <!-- Tab Navigation for Simulation Types -->
+          <div class="flex gap-4">
+            <button id="circuitBuilderTab" onclick="showResistanceTab('builder')" 
+                    class="phet-button flex-1 py-3 text-base bg-gradient-to-r from-red-600 to-red-700 text-white">
+              🔧 Circuit Builder
+            </button>
+            <button id="ivGraphTab" onclick="showResistanceTab('graph')" 
+                    class="phet-button flex-1 py-3 text-base bg-gray-200 text-gray-700">
+              📊 I-V Graph
+            </button>
+          </div>
+          
+          <!-- Circuit Builder Content -->
+          <div id="circuitBuilderContent">
+            <div class="grid lg:grid-cols-3 gap-6">
+              
+              <!-- Component Library -->
+              <div class="lg:col-span-1">
+                <div class="phet-control-panel p-6 mb-6" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+                  <h3 class="text-2xl font-black text-gray-800 mb-4 flex items-center">
+                    <span class="text-3xl mr-3">🔧</span>
+                    Circuit Builder
+                  </h3>
+                  <p class="text-sm text-gray-800 font-semibold mb-4">
+                    Build your own circuit! Add batteries and light bulbs to see them glow based on Ohm's Law!
+                  </p>
+                  <ol class="space-y-2 text-sm text-gray-800 font-semibold">
+                    <li>✓ Add/remove batteries (voltage sources)</li>
+                    <li>✓ Add/remove light bulbs (resistors)</li>
+                    <li>✓ Watch bulbs get BRIGHTER with more voltage!</li>
+                    <li>✓ Watch bulbs get DIMMER with more resistance!</li>
+                    <li>✓ See real-time current calculations</li>
+                  </ol>
+                </div>
+                
+                <div class="phet-control-panel p-6">
+                  <h3 class="text-xl font-black text-gray-800 mb-4">🔋 Add Components</h3>
+                  
+                  <div class="space-y-4">
+                    <!-- Add Battery -->
+                    <div class="bg-white p-4 rounded-xl border-3 border-yellow-300">
+                      <h4 class="font-black text-gray-800 mb-3">🔋 Battery</h4>
+                      <div class="flex items-center gap-2 mb-3">
+                        <input type="number" id="newBatteryVoltage" class="flex-1 p-2 border-2 border-gray-300 rounded-lg font-bold" placeholder="Volts" value="9" step="0.5" min="1" max="24">
+                        <span class="font-bold">V</span>
+                      </div>
+                      <button onclick="addBattery()" class="phet-button w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-800 py-2 text-sm">
+                        ➕ Add Battery
+                      </button>
+                    </div>
+                    
+                    <!-- Add Light Bulb -->
+                    <div class="bg-white p-4 rounded-xl border-3 border-orange-300">
+                      <h4 class="font-black text-gray-800 mb-3">💡 Light Bulb (Resistor)</h4>
+                      <div class="flex items-center gap-2 mb-3">
+                        <input type="number" id="newResistorValue" class="flex-1 p-2 border-2 border-gray-300 rounded-lg font-bold" placeholder="Ohms" value="100" step="10" min="10" max="1000">
+                        <span class="font-bold">Ω</span>
+                      </div>
+                      <button onclick="addResistor()" class="phet-button w-full bg-gradient-to-r from-orange-400 to-orange-500 text-white py-2 text-sm">
+                        ➕ Add Light Bulb
+                      </button>
+                    </div>
+                    
+                    <!-- Add Regular Resistor -->
+                    <div class="bg-white p-4 rounded-xl border-3 border-red-300">
+                      <h4 class="font-black text-gray-800 mb-3">🔌 Resistor</h4>
+                      <div class="flex items-center gap-2 mb-3">
+                        <input type="number" id="newResistorValue2" class="flex-1 p-2 border-2 border-gray-300 rounded-lg font-bold" placeholder="Ohms" value="50" step="10" min="10" max="1000">
+                        <span class="font-bold">Ω</span>
+                      </div>
+                      <button onclick="addResistor2()" class="phet-button w-full bg-gradient-to-r from-red-400 to-red-500 text-white py-2 text-sm">
+                        ➕ Add Resistor
+                      </button>
+                    </div>
+                    
+                    <!-- Clear Circuit -->
+                    <button onclick="clearCircuit()" class="phet-button w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3">
+                      🗑️ Clear All
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Info Panel -->
+                <div class="phet-control-panel p-6 mt-6" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #dc2626;">
+                  <h4 class="font-black text-lg mb-3 text-gray-800">💡 Ohm's Law & Power</h4>
+                  <div class="bg-white p-4 rounded-xl text-center mb-3">
+                    <div class="text-3xl font-black text-red-700">V = I × R</div>
+                    <div class="text-xl font-black text-orange-600 mt-2">P = I² × R</div>
+                  </div>
+                  <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start">
+                      <span class="mr-2">⚡</span>
+                      <span><strong>More batteries</strong> = More voltage = BRIGHTER bulbs!</span>
+                    </li>
+                    <li class="flex items-start">
+                      <span class="mr-2">💡</span>
+                      <span><strong>More bulbs</strong> = More resistance = DIMMER bulbs!</span>
+                    </li>
+                    <li class="flex items-start">
+                      <span class="mr-2">🔥</span>
+                      <span>Power (brightness) = Current² × Resistance</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Circuit Visualization -->
+              <div class="lg:col-span-2">
+                <canvas id="circuitBuilderCanvas" width="700" height="600" class="phet-canvas w-full"></canvas>
+                
+                <!-- Meters -->
+                <div class="grid grid-cols-3 gap-4 mt-6">
+                  <div class="phet-meter p-4 text-center">
+                    <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Total Voltage</div>
+                    <div id="builderVoltage" class="text-3xl font-black glow-text">0.0 V</div>
+                  </div>
+                  <div class="phet-meter p-4 text-center">
+                    <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Circuit Current</div>
+                    <div id="builderCurrent" class="text-3xl font-black glow-text" style="color: #f59e0b;">0.000 A</div>
+                  </div>
+                  <div class="phet-meter p-4 text-center">
+                    <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Total Resistance</div>
+                    <div id="builderResistance" class="text-3xl font-black glow-text" style="color: #fbbf24;">0 Ω</div>
+                  </div>
+                </div>
+                
+                <!-- Component List -->
+                <div class="phet-card p-6 mt-6">
+                  <h4 class="text-xl font-black text-gray-800 mb-4">📋 Circuit Components</h4>
+                  <div id="componentList" class="space-y-2"></div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
+          <!-- I-V Graph Content -->
+          <div id="ivGraphContent" class="hidden">
+            <div class="grid lg:grid-cols-3 gap-6">
+          
+          <!-- Control Panel -->
+          <div class="lg:col-span-1">
+            <!-- Instructions -->
+            <div class="phet-control-panel p-6 mb-6" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+              <h3 class="text-2xl font-black text-gray-800 mb-4 flex items-center">
+                <span class="text-3xl mr-3">📖</span>
+                How to Use
+              </h3>
+              <ol class="space-y-3 text-sm text-gray-800 font-semibold">
+                <li class="flex items-start">
+                  <span class="bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">1</span>
+                  <span>Adjust <strong>Voltage</strong> slider up and down</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">2</span>
+                  <span>Change <strong>Resistance</strong> - notice the curve slope!</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">3</span>
+                  <span>Increase <strong>Temperature</strong> - see resistance rise!</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">4</span>
+                  <span>Watch the I-V graph - the glowing dot shows your current point</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="bg-red-700 text-white w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-bold">5</span>
+                  <span>A straight line = Ohmic material (follows Ohm's Law!)</span>
+                </li>
+              </ol>
+            </div>
+            
+            <div class="phet-control-panel p-6">
+              <h3 class="text-2xl font-black text-gray-800 mb-6">⚙️ Controls</h3>
+              
+              <div class="space-y-6">
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Voltage
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="0" max="20" value="10" step="0.5" 
+                           class="phet-slider flex-1" 
+                           style="background: linear-gradient(to right, #dc2626, #b91c1c);"
+                           oninput="updateResistanceSimulation()">
+                    <span id="voltageInput" class="text-2xl font-black text-red-600 w-20">10 V</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Resistance
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="10" max="500" value="100" step="10" 
+                           class="phet-slider flex-1" 
+                           oninput="updateResistanceSimulation()"
+                           style="background: linear-gradient(to right, #f59e0b, #d97706);">
+                    <span id="resistanceInput" class="text-2xl font-black text-orange-600 w-20">100 Ω</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-lg font-bold text-gray-700 mb-2">
+                    Temperature
+                  </label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="range" min="0" max="150" value="25" step="5" 
+                           class="phet-slider flex-1" 
+                           oninput="updateResistanceSimulation()"
+                           style="background: linear-gradient(to right, #06b6d4, #dc2626);">
+                    <span id="temperatureInput" class="text-2xl font-black text-red-600 w-20">25°C</span>
+                  </div>
+                </div>
+                
+                <button onclick="resetResistanceSimulation()" class="phet-button w-full bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3">
+                  🔄 Reset
+                </button>
+              </div>
+            </div>
+            
+            <!-- Info Panel -->
+            <div class="phet-control-panel p-6 mt-6" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #dc2626;">
+              <h4 class="font-black text-lg mb-3 text-gray-800">💡 Key Concepts</h4>
+              <ul class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start">
+                  <span class="mr-2">⚡</span>
+                  <span>Ohm's Law: V = I × R</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">🌡️</span>
+                  <span>Temperature increases resistance</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="mr-2">📊</span>
+                  <span>Linear I-V curve = Ohmic</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Visualization -->
+          <div class="lg:col-span-2">
+            <canvas id="resistanceCanvas" width="700" height="400" class="phet-canvas w-full"></canvas>
+            
+            <!-- Meters -->
+            <div class="grid grid-cols-3 gap-4 mt-6">
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Current</div>
+                <div id="ohmsCurrentDisplay" class="text-3xl font-black glow-text">0.100 A</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Power</div>
+                <div id="powerDisplay" class="text-3xl font-black glow-text" style="color: #f59e0b;">1.00 W</div>
+              </div>
+              <div class="phet-meter p-4 text-center">
+                <div class="text-xs uppercase tracking-wider mb-2 opacity-75">Status</div>
+                <div id="resistanceType" class="text-2xl font-black glow-text" style="color: #fbbf24;">NORMAL</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+          </div>
+          
+        </div>
+      `;
+    }
+
+    function updateVoltageSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (!inputs || inputs.length < 2) return;
+      
+      const voltage = parseFloat(inputs[0].value);
+      const resistance = parseFloat(inputs[1].value);
+      
+      document.getElementById('voltageValue').textContent = voltage.toFixed(1) + ' V';
+      document.getElementById('loadResistance').textContent = resistance.toFixed(0) + ' Ω';
+      
+      const current = voltage / resistance;
+      
+      document.getElementById('emfDisplay').textContent = voltage.toFixed(1) + ' V';
+      document.getElementById('currentDisplay').textContent = current.toFixed(3) + ' A';
+      document.getElementById('vdropDisplay').textContent = voltage.toFixed(1) + ' V';
+      
+      drawVoltageCircuit(voltage, current, resistance);
+    }
+
+    function resetVoltageSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (inputs && inputs.length >= 2) {
+        inputs[0].value = 9;
+        inputs[1].value = 100;
+        updateVoltageSimulation();
+      }
+    }
+
+    function drawVoltageCircuit(voltage, current, resistance) {
+      const canvas = document.getElementById('voltageCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      // Draw battery
+      ctx.fillStyle = '#fbbf24';
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      
+      const batteryX = 80;
+      const batteryY = 200;
+      const batteryW = 80;
+      const batteryH = 140;
+      
+      // Battery body
+      ctx.fillRect(batteryX, batteryY, batteryW, batteryH);
+      ctx.strokeRect(batteryX, batteryY, batteryW, batteryH);
+      
+      // Battery terminals
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(batteryX + 20, batteryY - 20, 40, 20);
+      ctx.fillStyle = '#1e40af';
+      ctx.fillRect(batteryX + 20, batteryY + batteryH, 40, 20);
+      
+      // Battery labels
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 28px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(voltage.toFixed(1) + 'V', batteryX + batteryW/2, batteryY + batteryH/2 + 10);
+      
+      ctx.font = 'bold 32px Arial';
+      ctx.fillText('+', batteryX + batteryW/2, batteryY - 10);
+      ctx.fillText('-', batteryX + batteryW/2, batteryY + batteryH + 35);
+      
+      // Draw wires
+      ctx.strokeStyle = '#374151';
+      ctx.lineWidth = 6;
+      
+      // Top wire
+      ctx.beginPath();
+      ctx.moveTo(batteryX + batteryW/2, batteryY - 20);
+      ctx.lineTo(batteryX + batteryW/2, 100);
+      ctx.lineTo(550, 100);
+      ctx.stroke();
+      
+      // Bottom wire
+      ctx.beginPath();
+      ctx.moveTo(batteryX + batteryW/2, batteryY + batteryH + 20);
+      ctx.lineTo(batteryX + batteryW/2, 440);
+      ctx.lineTo(550, 440);
+      ctx.stroke();
+      
+      // Draw resistor
+      const resistorX = 400;
+      const resistorY = 100;
+      const resistorW = 150;
+      const resistorH = 60;
+      
+      ctx.fillStyle = '#f87171';
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 4;
+      
+      // Resistor zigzag
+      ctx.beginPath();
+      ctx.moveTo(resistorX, resistorY);
+      for (let i = 0; i < 6; i++) {
+        ctx.lineTo(resistorX + (i * 25), resistorY + (i % 2 === 0 ? resistorH : 0));
+      }
+      ctx.lineTo(resistorX + resistorW, resistorY);
+      ctx.lineWidth = 8;
+      ctx.stroke();
+      
+      // Resistor label
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(resistance.toFixed(0) + ' Ω', resistorX + resistorW/2, resistorY + resistorH + 30);
+      
+      // Close bottom wire
+      ctx.strokeStyle = '#374151';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(550, 100);
+      ctx.lineTo(550, 440);
+      ctx.stroke();
+      
+      // Draw current flow arrows
+      const arrowCount = Math.min(Math.floor(current * 15) + 3, 15);
+      ctx.fillStyle = '#3b82f6';
+      
+      // Top arrows
+      for (let i = 0; i < 4; i++) {
+        const x = 200 + i * 80;
+        ctx.beginPath();
+        ctx.moveTo(x, 95);
+        ctx.lineTo(x + 20, 100);
+        ctx.lineTo(x, 105);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      // Right side arrows
+      for (let i = 0; i < 3; i++) {
+        const y = 200 + i * 80;
+        ctx.beginPath();
+        ctx.moveTo(545, y);
+        ctx.lineTo(550, y + 20);
+        ctx.lineTo(555, y);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      // Labels
+      ctx.fillStyle = '#1e40af';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('I = ' + current.toFixed(3) + ' A', 350, 70);
+      
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 18px Arial';
+      ctx.fillText('EMF Source', batteryX + batteryW/2, batteryY - 50);
+      ctx.fillText('Load Resistor', resistorX + resistorW/2, resistorY - 20);
+    }
+
+    function updateCurrentSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (!inputs || inputs.length < 2) return;
+      
+      const voltage = parseFloat(inputs[0].value);
+      const resistance = parseFloat(inputs[1].value);
+      
+      document.getElementById('appliedVoltage').textContent = voltage.toFixed(1) + ' V';
+      document.getElementById('wireResistance').textContent = resistance.toFixed(0) + ' Ω';
+      
+      const current = voltage / resistance;
+      const charge = current * 10;
+      const driftLevel = current < 0.05 ? 'VERY LOW' : current < 0.1 ? 'LOW' : current < 0.2 ? 'MEDIUM' : 'HIGH';
+      
+      document.getElementById('currentValue').textContent = current.toFixed(3) + ' A';
+      document.getElementById('chargeFlow').textContent = charge.toFixed(2) + ' C';
+      document.getElementById('driftVelocity').textContent = driftLevel;
+      
+      drawCurrentFlow(current, voltage);
+    }
+
+    function resetCurrentSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (inputs && inputs.length >= 2) {
+        inputs[0].value = 5;
+        inputs[1].value = 50;
+        updateCurrentSimulation();
+      }
+    }
+
+    let electronPositions = [];
+    
+    function drawCurrentFlow(current, voltage) {
+      const canvas = document.getElementById('currentCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      // Draw wire conductor
+      const wireY = 200;
+      const wireH = 80;
+      const wireX = 50;
+      const wireW = 600;
+      
+      // Wire gradient
+      const wireGradient = ctx.createLinearGradient(wireX, wireY, wireX, wireY + wireH);
+      wireGradient.addColorStop(0, '#9ca3af');
+      wireGradient.addColorStop(0.5, '#d1d5db');
+      wireGradient.addColorStop(1, '#9ca3af');
+      
+      ctx.fillStyle = wireGradient;
+      ctx.fillRect(wireX, wireY, wireW, wireH);
+      
+      ctx.strokeStyle = '#6b7280';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(wireX, wireY, wireW, wireH);
+      
+      // Draw terminals
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(wireX, wireY + wireH/2, 25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#991b1b';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      
+      ctx.fillStyle = '#1e40af';
+      ctx.beginPath();
+      ctx.arc(wireX + wireW, wireY + wireH/2, 25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.stroke();
+      
+      // Terminal labels
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('-', wireX, wireY + wireH/2 + 8);
+      ctx.fillText('+', wireX + wireW, wireY + wireH/2 + 8);
+      
+      // Initialize electrons if needed
+      if (electronPositions.length === 0) {
+        const electronCount = Math.floor(current * 30) + 10;
+        for (let i = 0; i < electronCount; i++) {
+          electronPositions.push({
+            x: wireX + (i / electronCount) * wireW,
+            y: wireY + wireH/2 + (Math.random() - 0.5) * 40
+          });
+        }
+      }
+      
+      // Update and draw electrons (moving right to left - electron flow)
+      const speed = current * 2 + 0.5;
+      electronPositions.forEach(electron => {
+        electron.x -= speed;
+        if (electron.x < wireX) {
+          electron.x = wireX + wireW;
+        }
+        
+        // Draw electron
+        const gradient = ctx.createRadialGradient(electron.x, electron.y, 0, electron.x, electron.y, 8);
+        gradient.addColorStop(0, '#ff6b6b');
+        gradient.addColorStop(1, '#dc2626');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(electron.x, electron.y, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Glow effect
+        ctx.shadowColor = '#ef4444';
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+      
+      // Draw conventional current arrows (opposite to electron flow)
+      ctx.fillStyle = '#3b82f6';
+      for (let i = 0; i < 5; i++) {
+        const x = 150 + i * 100;
+        const y = wireY - 40;
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 25, y + 5);
+        ctx.lineTo(x, y + 10);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Glow
+        ctx.shadowColor = '#3b82f6';
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      // Labels
+      ctx.fillStyle = '#1e40af';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Conventional Current →', w/2, wireY - 60);
+      
+      ctx.fillStyle = '#dc2626';
+      ctx.fillText('← Electron Flow', w/2, wireY + wireH + 50);
+      
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText('Conductor Wire', w/2, wireY + wireH/2 + 8);
+      
+      ctx.font = '16px Arial';
+      ctx.fillText(voltage.toFixed(1) + 'V Applied', w/2, h - 30);
+      
+      // Continue animation
+      if (document.getElementById('currentCanvas')) {
+        animationFrame = requestAnimationFrame(() => drawCurrentFlow(current, voltage));
+      }
+    }
+
+    function updateResistanceSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (!inputs || inputs.length < 3) return;
+      
+      const voltage = parseFloat(inputs[0].value);
+      const resistance = parseFloat(inputs[1].value);
+      const temperature = parseFloat(inputs[2].value);
+      
+      document.getElementById('voltageInput').textContent = voltage.toFixed(0) + ' V';
+      document.getElementById('resistanceInput').textContent = resistance.toFixed(0) + ' Ω';
+      document.getElementById('temperatureInput').textContent = temperature.toFixed(0) + '°C';
+      
+      const tempFactor = 1 + (temperature - 25) * 0.004;
+      const actualResistance = resistance * tempFactor;
+      const current = voltage / actualResistance;
+      const power = voltage * current;
+      
+      const resistanceType = temperature > 100 ? 'HOT' : temperature > 50 ? 'WARM' : 'NORMAL';
+      
+      document.getElementById('ohmsCurrentDisplay').textContent = current.toFixed(3) + ' A';
+      document.getElementById('powerDisplay').textContent = power.toFixed(2) + ' W';
+      document.getElementById('resistanceType').textContent = resistanceType;
+      
+      drawIVCurve(voltage, resistance, temperature, actualResistance, current);
+    }
+
+    function resetResistanceSimulation() {
+      const inputs = document.querySelectorAll('#simulationContent input[type="range"]');
+      if (inputs && inputs.length >= 3) {
+        inputs[0].value = 10;
+        inputs[1].value = 100;
+        inputs[2].value = 25;
+        updateResistanceSimulation();
+      }
+    }
+
+    function drawIVCurve(voltage, resistance, temperature, actualResistance, current) {
+      const canvas = document.getElementById('resistanceCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      const margin = 60;
+      const graphW = w - 2 * margin;
+      const graphH = h - 2 * margin;
+      
+      // Draw axes
+      ctx.strokeStyle = '#1f2937';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(margin, margin);
+      ctx.lineTo(margin, h - margin);
+      ctx.lineTo(w - margin, h - margin);
+      ctx.stroke();
+      
+      // Axis labels
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 18px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Voltage (V)', w/2, h - 15);
+      
+      ctx.save();
+      ctx.translate(20, h/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.fillText('Current (A)', 0, 0);
+      ctx.restore();
+      
+      // Draw grid
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        const x = margin + (i / 10) * graphW;
+        const y = h - margin - (i / 10) * graphH;
+        
+        ctx.beginPath();
+        ctx.moveTo(x, h - margin);
+        ctx.lineTo(x, margin);
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(margin, y);
+        ctx.lineTo(w - margin, y);
+        ctx.stroke();
+      }
+      
+      // Draw I-V curve
+      const lineColor = temperature > 100 ? '#dc2626' : temperature > 50 ? '#f59e0b' : '#3b82f6';
+      ctx.strokeStyle = lineColor;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      
+      const maxV = 20;
+      const maxI = maxV / actualResistance;
+      
+      for (let v = 0; v <= maxV; v += 0.1) {
+        const i = v / actualResistance;
+        const x = margin + (v / maxV) * graphW;
+        const y = h - margin - (i / maxI) * graphH;
+        
+        if (v === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      
+      // Draw current point
+      const pointX = margin + (voltage / maxV) * graphW;
+      const pointY = h - margin - (current / maxI) * graphH;
+      
+      ctx.fillStyle = lineColor;
+      ctx.beginPath();
+      ctx.arc(pointX, pointY, 10, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Glow effect
+      ctx.shadowColor = lineColor;
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      
+      // Point label
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText(`(${voltage}V, ${current.toFixed(3)}A)`, pointX + 15, pointY - 10);
+      
+      // Title
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('I-V Characteristic Curve (Ohmic)', w/2, 35);
+      
+      // Slope info
+      ctx.font = '16px Arial';
+      const conductance = 1 / actualResistance;
+      ctx.fillText(`Slope = 1/R = ${conductance.toFixed(6)} S`, w/2, h - margin + 35);
+      
+      // Temperature effect indicator
+      if (temperature > 25) {
+        ctx.fillStyle = '#dc2626';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'right';
+        const tempIncrease = ((actualResistance / resistance - 1) * 100).toFixed(1);
+        ctx.fillText(`⚠️ Resistance +${tempIncrease}% due to temperature`, w - margin - 10, 60);
+      }
+    }
+
+    function loadQuiz(topic) {
+      currentQuizAnswers = new Array(15).fill(null);
+      quizSubmitted = false;
+      
+      const questions = quizData[topic];
+      let html = `
+        <div class="space-y-6">
+          <div class="flex justify-between items-center bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-xl border-3 border-purple-300">
+            <h3 class="text-3xl font-black text-gray-800">📝 Quiz Challenge</h3>
+            <div class="text-lg font-bold text-purple-600">15 Questions</div>
+          </div>
+      `;
+      
+      questions.forEach((q, index) => {
+        html += `
+          <div class="quiz-card p-6">
+            <div class="font-bold text-xl text-gray-800 mb-4">
+              <span class="inline-block w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center leading-10 mr-3">
+                ${index + 1}
+              </span>
+              ${q.q}
+            </div>
+        `;
+        
+        if (q.type === 'mc') {
+          q.options.forEach((option, optIndex) => {
+            html += `
+              <div class="quiz-option bg-gradient-to-r from-gray-50 to-gray-100 border-3 border-gray-300 p-4 rounded-xl mb-3 cursor-pointer hover:border-blue-400 hover:from-blue-50 hover:to-blue-100 transition-all" 
+                   onclick="selectAnswer(${index}, ${optIndex})">
+                <label class="cursor-pointer flex items-center font-semibold">
+                  <input type="radio" name="q${index}" value="${optIndex}" class="mr-4 w-5 h-5">
+                  <span>${option}</span>
+                </label>
+              </div>
+            `;
+          });
+        } else {
+          html += `
+            <div class="grid grid-cols-2 gap-4">
+              <div class="quiz-option bg-gradient-to-r from-green-50 to-green-100 border-3 border-green-300 p-5 rounded-xl cursor-pointer hover:border-green-500 transition-all" 
+                   onclick="selectAnswer(${index}, 'true')">
+                <label class="cursor-pointer flex items-center justify-center font-black text-xl">
+                  <input type="radio" name="q${index}" value="true" class="mr-4 w-5 h-5">
+                  <span>✓ TRUE</span>
+                </label>
+              </div>
+              <div class="quiz-option bg-gradient-to-r from-red-50 to-red-100 border-3 border-red-300 p-5 rounded-xl cursor-pointer hover:border-red-500 transition-all" 
+                   onclick="selectAnswer(${index}, 'false')">
+                <label class="cursor-pointer flex items-center justify-center font-black text-xl">
+                  <input type="radio" name="q${index}" value="false" class="mr-4 w-5 h-5">
+                  <span>✗ FALSE</span>
+                </label>
+              </div>
+            </div>
+          `;
+        }
+        
+        html += `
+            <div id="feedback${index}" class="hidden mt-4"></div>
+          </div>
+        `;
+      });
+      
+      html += `
+          <button id="submitQuizBtn" onclick="submitQuiz()" 
+                  class="phet-button w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-6 text-2xl">
+            Submit Quiz 🚀
+          </button>
+          <div id="quizResults" class="hidden"></div>
+        </div>
+      `;
+      
+      document.getElementById('quizContent').innerHTML = html;
+    }
+
+    function selectAnswer(questionIndex, answer) {
+      currentQuizAnswers[questionIndex] = answer;
+    }
+
+    async function submitQuiz() {
+      if (quizSubmitted) return;
+      
+      const unanswered = currentQuizAnswers.filter(a => a === null).length;
+      if (unanswered > 0) {
+        showToast(`Please answer all questions! ${unanswered} remaining.`, 'warning');
+        return;
+      }
+      
+      quizSubmitted = true;
+      const btn = document.getElementById('submitQuizBtn');
+      btn.disabled = true;
+      btn.textContent = '📊 Grading...';
+      btn.classList.add('opacity-50');
+      
+      const questions = quizData[currentTopic];
+      let score = 0;
+      
+      questions.forEach((q, index) => {
+        const userAnswer = currentQuizAnswers[index];
+        const correctAnswer = q.type === 'mc' ? q.answer : q.answer;
+        const isCorrect = String(userAnswer) === String(correctAnswer);
+        
+        if (isCorrect) score++;
+        
+        const feedbackDiv = document.getElementById(`feedback${index}`);
+        feedbackDiv.classList.remove('hidden');
+        
+        const options = document.querySelectorAll(`input[name="q${index}"]`);
+        options.forEach(opt => {
+          const parent = opt.closest('.quiz-option');
+          if (String(opt.value) === String(correctAnswer)) {
+            parent.classList.add('correct');
+          } else if (String(opt.value) === String(userAnswer) && !isCorrect) {
+            parent.classList.add('incorrect');
+          }
+          opt.disabled = true;
+          parent.style.cursor = 'default';
+        });
+        
+        if (isCorrect) {
+          feedbackDiv.className = 'mt-4 p-4 rounded-xl bg-gradient-to-r from-green-400 to-green-500 text-white font-bold text-lg';
+          feedbackDiv.innerHTML = '<span class="text-2xl mr-2">✓</span> Correct! Well done!';
+        } else {
+          feedbackDiv.className = 'mt-4 p-4 rounded-xl bg-gradient-to-r from-red-400 to-red-500 text-white font-bold text-lg';
+          const correctText = q.type === 'mc' ? q.options[correctAnswer] : correctAnswer.toUpperCase();
+          feedbackDiv.innerHTML = `<span class="text-2xl mr-2">✗</span> Incorrect. The correct answer is: <strong>${correctText}</strong>`;
+        }
+      });
+      
+      const percentage = Math.round((score / 15) * 100);
+      let grade, emoji, colorFrom, colorTo;
+      
+      if (percentage >= 80) {
+        grade = 'Outstanding!';
+        emoji = '🌟';
+        colorFrom = '#10b981';
+        colorTo = '#059669';
+      } else if (percentage >= 60) {
+        grade = 'Good Work!';
+        emoji = '👍';
+        colorFrom = '#fbbf24';
+        colorTo = '#f59e0b';
+      } else {
+        grade = 'Keep Learning!';
+        emoji = '📚';
+        colorFrom = '#ef4444';
+        colorTo = '#dc2626';
+      }
+      
+      const resultsDiv = document.getElementById('quizResults');
+      resultsDiv.classList.remove('hidden');
+      resultsDiv.innerHTML = `
+        <div class="phet-card p-8 text-center" style="background: linear-gradient(135deg, ${colorFrom} 0%, ${colorTo} 100%); border: 4px solid rgba(255,255,255,0.3);">
+          <div class="text-6xl mb-4">${emoji}</div>
+          <div class="text-4xl font-black text-white mb-3">${grade}</div>
+          <div class="text-7xl font-black text-white mb-3">${score}/15</div>
+          <div class="text-3xl font-bold text-white">${percentage}%</div>
+        </div>
+      `;
+      
+      if (allRecords.length >= 999) {
+        showToast('Storage limit reached (999 records).', 'warning');
+        btn.textContent = '✓ Quiz Completed';
+        return;
+      }
+      
+      const quizRecord = {
+        quiz_id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        topic: currentTopic,
+        score: score,
+        total_questions: 15,
+        timestamp: new Date().toISOString(),
+        answers: JSON.stringify(currentQuizAnswers)
+      };
+      
+      const createResult = await window.dataSdk.create(quizRecord);
+      
+      if (!createResult.isOk) {
+        showToast('Failed to save results.', 'error');
+      }
+      
+      btn.textContent = '✓ Quiz Completed';
+      resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Real-World Current Simulations
+    function simulateRealWorld(type) {
+      // Stop any existing animation for this type
+      if (realWorldAnimations[type]) {
+        cancelAnimationFrame(realWorldAnimations[type]);
+      }
+      
+      const animations = {
+        led: animateLED,
+        phone: animatePhone,
+        breaker: animateBreaker,
+        lightning: animateLightning
+      };
+      
+      if (animations[type]) {
+        animations[type]();
+      }
+    }
+
+    function animateLED() {
+      const canvas = document.getElementById('ledCanvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let brightness = 0;
+      let increasing = true;
+      let frame = 0;
+      
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Background
+        ctx.fillStyle = '#f5f5f5';
+        ctx.fillRect(0, 0, w, h);
+        
+        // LED bulb body
+        const centerX = w / 2;
+        const centerY = h / 2;
+        
+        // Glow effect
+        if (brightness > 0.3) {
+          const gradient = ctx.createRadialGradient(centerX, centerY, 20, centerX, centerY, 60 + brightness * 30);
+          gradient.addColorStop(0, `rgba(255, 220, 100, ${brightness})`);
+          gradient.addColorStop(1, 'rgba(255, 220, 100, 0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, w, h);
+        }
+        
+        // LED bulb
+        ctx.fillStyle = `rgb(255, ${220 - brightness * 100}, ${100 - brightness * 50})`;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Shine effect
+        ctx.fillStyle = `rgba(255, 255, 255, ${brightness * 0.6})`;
+        ctx.beginPath();
+        ctx.arc(centerX - 10, centerY - 10, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // LED pins
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(centerX - 15, centerY + 30);
+        ctx.lineTo(centerX - 15, centerY + 50);
+        ctx.moveTo(centerX + 15, centerY + 30);
+        ctx.lineTo(centerX + 15, centerY + 50);
+        ctx.stroke();
+        
+        // Current arrows (very small flow)
+        if (frame % 20 < 10) {
+          ctx.fillStyle = '#3b82f6';
+          ctx.beginPath();
+          ctx.moveTo(centerX - 20, 30);
+          ctx.lineTo(centerX - 15, 35);
+          ctx.lineTo(centerX - 20, 40);
+          ctx.closePath();
+          ctx.fill();
+        }
+        
+        // Text
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('0.02A (20mA)', centerX, h - 20);
+        ctx.font = '12px Arial';
+        ctx.fillText('Low current, high efficiency!', centerX, h - 5);
+        
+        // Animate brightness
+        if (increasing) {
+          brightness += 0.02;
+          if (brightness >= 1) {
+            brightness = 1;
+            increasing = false;
+          }
+        } else {
+          brightness -= 0.02;
+          if (brightness <= 0.3) {
+            brightness = 0.3;
+            increasing = true;
+          }
+        }
+        
+        frame++;
+        realWorldAnimations['led'] = requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animatePhone() {
+      const canvas = document.getElementById('phoneCanvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let chargeLevel = 20;
+      let frame = 0;
+      
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Background
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Phone outline
+        const phoneX = 40;
+        const phoneY = 30;
+        const phoneW = 100;
+        const phoneH = 140;
+        
+        ctx.fillStyle = '#1f2937';
+        ctx.fillRect(phoneX, phoneY, phoneW, phoneH);
+        ctx.strokeStyle = '#374151';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(phoneX, phoneY, phoneW, phoneH);
+        
+        // Screen
+        ctx.fillStyle = '#60a5fa';
+        ctx.fillRect(phoneX + 10, phoneY + 20, phoneW - 20, phoneH - 40);
+        
+        // Battery icon on screen
+        const battX = phoneX + 45;
+        const battY = phoneY + 60;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(battX, battY, 40, 20);
+        ctx.fillRect(battX + 40, battY + 6, 4, 8);
+        
+        // Battery fill
+        const fillWidth = (chargeLevel / 100) * 36;
+        const fillColor = chargeLevel < 30 ? '#ef4444' : chargeLevel < 70 ? '#f59e0b' : '#22c55e';
+        ctx.fillStyle = fillColor;
+        ctx.fillRect(battX + 2, battY + 2, fillWidth, 16);
+        
+        // Charging percentage
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.floor(chargeLevel)}%`, battX + 20, battY + 35);
+        
+        // Charging cable
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(phoneX + phoneW/2, phoneY + phoneH);
+        ctx.lineTo(phoneX + phoneW/2, h - 20);
+        ctx.stroke();
+        
+        // Current flow arrows in cable
+        for (let i = 0; i < 3; i++) {
+          const arrowY = phoneY + phoneH + 15 + i * 25 + (frame % 25);
+          if (arrowY < h - 20) {
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.moveTo(phoneX + phoneW/2 - 8, arrowY);
+            ctx.lineTo(phoneX + phoneW/2, arrowY + 10);
+            ctx.lineTo(phoneX + phoneW/2 + 8, arrowY);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+        
+        // Plug icon
+        const plugX = w - 80;
+        const plugY = h/2 - 20;
+        ctx.fillStyle = '#1f2937';
+        ctx.fillRect(plugX, plugY, 50, 40);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(plugX + 10, plugY + 10, 10, 8);
+        ctx.fillRect(plugX + 30, plugY + 10, 10, 8);
+        
+        // Wire to plug
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(phoneX + phoneW/2, h - 20);
+        ctx.lineTo(plugX, plugY + 20);
+        ctx.stroke();
+        
+        // Text
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('1-2A Charging', w/2, h - 5);
+        
+        // Animate charging
+        chargeLevel += 0.5;
+        if (chargeLevel > 100) chargeLevel = 20;
+        
+        frame++;
+        realWorldAnimations['phone'] = requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animateBreaker() {
+      const canvas = document.getElementById('breakerCanvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let current = 0;
+      let tripped = false;
+      let frame = 0;
+      
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Background
+        ctx.fillStyle = tripped ? '#fee2e2' : '#f0f9ff';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Breaker box
+        const boxX = w/2 - 50;
+        const boxY = 40;
+        const boxW = 100;
+        const boxH = 100;
+        
+        ctx.fillStyle = '#6b7280';
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeStyle = '#374151';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        
+        // Breaker switch
+        const switchX = boxX + boxW/2;
+        const switchY = boxY + 30;
+        const switchAngle = tripped ? -0.5 : 0.5;
+        
+        ctx.strokeStyle = tripped ? '#dc2626' : '#22c55e';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(switchX, switchY);
+        ctx.lineTo(switchX + Math.sin(switchAngle) * 25, switchY + Math.cos(switchAngle) * 25);
+        ctx.stroke();
+        
+        // Switch knob
+        ctx.fillStyle = tripped ? '#ef4444' : '#10b981';
+        ctx.beginPath();
+        ctx.arc(switchX + Math.sin(switchAngle) * 25, switchY + Math.cos(switchAngle) * 25, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Current meter
+        ctx.fillStyle = '#1f2937';
+        ctx.fillRect(boxX + 10, boxY + 60, boxW - 20, 30);
+        
+        // Current bar
+        const barWidth = (current / 20) * (boxW - 30);
+        const barColor = current < 15 ? '#22c55e' : current < 18 ? '#f59e0b' : '#ef4444';
+        ctx.fillStyle = barColor;
+        ctx.fillRect(boxX + 15, boxY + 65, barWidth, 20);
+        
+        // Current text
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${current.toFixed(1)}A`, switchX, boxY + 80);
+        
+        // Warning light
+        if (current > 15) {
+          const alpha = Math.sin(frame * 0.2) * 0.5 + 0.5;
+          ctx.fillStyle = `rgba(239, 68, 68, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(boxX + boxW - 15, boxY + 15, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        
+        // Status text
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        
+        if (tripped) {
+          ctx.fillStyle = '#dc2626';
+          ctx.fillText('⚠️ TRIPPED!', w/2, h - 30);
+          ctx.font = '12px Arial';
+          ctx.fillText('Overcurrent detected', w/2, h - 12);
+        } else {
+          ctx.fillText('Max: 15-20A', w/2, h - 30);
+          ctx.font = '12px Arial';
+          ctx.fillText('Safety protection active', w/2, h - 12);
+        }
+        
+        // Animate current
+        if (!tripped) {
+          current += 0.15;
+          if (current > 20) {
+            tripped = true;
+            setTimeout(() => {
+              tripped = false;
+              current = 0;
+            }, 2000);
+          }
+        }
+        
+        frame++;
+        realWorldAnimations['breaker'] = requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function animateLightning() {
+      const canvas = document.getElementById('lightningCanvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      let lightningActive = false;
+      let frame = 0;
+      let boltPoints = [];
+      
+      function generateBolt() {
+        boltPoints = [{x: w/2, y: 10}];
+        let currentX = w/2;
+        let currentY = 10;
+        
+        while (currentY < h - 20) {
+          currentX += (Math.random() - 0.5) * 40;
+          currentY += Math.random() * 20 + 15;
+          currentX = Math.max(30, Math.min(w - 30, currentX));
+          boltPoints.push({x: currentX, y: currentY});
+        }
+      }
+      
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        
+        // Background
+        const bgColor = lightningActive ? '#1e293b' : '#0f172a';
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, w, h);
+        
+        // Flash effect
+        if (lightningActive) {
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.3})`;
+          ctx.fillRect(0, 0, w, h);
+        }
+        
+        // Draw lightning bolt
+        if (lightningActive && boltPoints.length > 0) {
+          // Glow layers
+          for (let i = 3; i > 0; i--) {
+            ctx.strokeStyle = `rgba(147, 197, 253, ${0.3 / i})`;
+            ctx.lineWidth = 20 * i;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(boltPoints[0].x, boltPoints[0].y);
+            for (let j = 1; j < boltPoints.length; j++) {
+              ctx.lineTo(boltPoints[j].x, boltPoints[j].y);
+            }
+            ctx.stroke();
+          }
+          
+          // Main bolt
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 4;
+          ctx.shadowColor = '#60a5fa';
+          ctx.shadowBlur = 20;
+          
+          ctx.beginPath();
+          ctx.moveTo(boltPoints[0].x, boltPoints[0].y);
+          for (let i = 1; i < boltPoints.length; i++) {
+            ctx.lineTo(boltPoints[i].x, boltPoints[i].y);
+          }
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+          
+          // Branches
+          for (let i = 1; i < boltPoints.length - 1; i++) {
+            if (Math.random() > 0.7) {
+              const branchLength = 20 + Math.random() * 30;
+              const angle = (Math.random() - 0.5) * Math.PI;
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(boltPoints[i].x, boltPoints[i].y);
+              ctx.lineTo(
+                boltPoints[i].x + Math.cos(angle) * branchLength,
+                boltPoints[i].y + Math.sin(angle) * branchLength
+              );
+              ctx.stroke();
+            }
+          }
+        }
+        
+        // Ground
+        ctx.fillStyle = '#166534';
+        ctx.fillRect(0, h - 20, w, 20);
+        
+        // Impact point glow
+        if (lightningActive && boltPoints.length > 0) {
+          const lastPoint = boltPoints[boltPoints.length - 1];
+          const gradient = ctx.createRadialGradient(lastPoint.x, h - 20, 0, lastPoint.x, h - 20, 40);
+          gradient.addColorStop(0, 'rgba(96, 165, 250, 0.8)');
+          gradient.addColorStop(1, 'rgba(96, 165, 250, 0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, w, h);
+        }
+        
+        // Text
+        ctx.fillStyle = lightningActive ? '#fff' : '#94a3b8';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 4;
+        ctx.fillText('20,000 - 200,000A', w/2, h - 5);
+        ctx.fillText('Extremely Dangerous!', w/2, 25);
+        ctx.shadowBlur = 0;
+        
+        // Trigger lightning randomly
+        if (frame % 60 === 0) {
+          lightningActive = true;
+          generateBolt();
+          setTimeout(() => {
+            lightningActive = false;
+          }, 150 + Math.random() * 100);
+        }
+        
+        frame++;
+        realWorldAnimations['lightning'] = requestAnimationFrame(draw);
+      }
+      
+      draw();
+    }
+
+    function loadCalculator(topic) {
+      const calculators = {
+        voltage: createVoltageCalculator(),
+        current: createCurrentCalculator(),
+        resistance: createResistanceCalculator()
+      };
+      
+      document.getElementById('calculatorContent').innerHTML = calculators[topic];
+    }
+
+    function loadDiscussion(topic) {
+      const discussions = {
+        voltage: {
+          title: "Understanding Voltage ⚡",
+          content: `
+            <div class="space-y-6">
+              <div class="phet-card p-8 bg-gradient-to-r from-red-50 to-red-100">
+                <h3 class="text-3xl font-black mb-4 text-red-800">What is Voltage?</h3>
+                <p class="text-lg leading-relaxed text-gray-800 mb-4">
+                  Think of voltage like <strong>water pressure</strong> in a pipe! Just as water pressure pushes water through pipes, 
+                  voltage pushes electric charge (electrons) through wires.
+                </p>
+                <p class="text-lg leading-relaxed text-gray-800">
+                  <strong>Voltage</strong> (also called <em>electric potential difference</em>) is the "push" that makes charges move. 
+                  The higher the voltage, the stronger the push!
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-amber-50 to-amber-100">
+                <h3 class="text-2xl font-black mb-4 text-amber-800 flex items-center">
+                  <span class="text-4xl mr-3">🔋</span>
+                  What is EMF?
+                </h3>
+                <p class="text-lg leading-relaxed text-gray-800 mb-4">
+                  <strong>EMF (Electromotive Force)</strong> is the energy provided by a battery or power source to push charges around a circuit. 
+                  It's measured in Volts (V).
+                </p>
+                <p class="text-lg leading-relaxed text-gray-800">
+                  EMF is NOT actually a force - it's better thought of as <em>energy per unit charge</em>. A 9V battery gives 
+                  9 Joules of energy to every Coulomb of charge that flows through it!
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-green-50 to-green-100">
+                <h3 class="text-2xl font-black mb-4 text-green-800">Real-World Examples</h3>
+                <ul class="space-y-4 text-lg">
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">🔌</span>
+                    <div>
+                      <strong>Wall Outlet:</strong> 120V (USA) or 230V (Europe) - enough "push" to power appliances
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">🔋</span>
+                    <div>
+                      <strong>AA Battery:</strong> 1.5V - perfect for small devices like remote controls
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">⚡</span>
+                    <div>
+                      <strong>Lightning Bolt:</strong> Over 100 million volts! - extremely dangerous
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">📱</span>
+                    <div>
+                      <strong>Phone Charger:</strong> 5V USB charging - safe and standard
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-purple-50 to-purple-100">
+                <h3 class="text-2xl font-black mb-4 text-purple-800">Key Formula</h3>
+                <div class="bg-white p-6 rounded-xl border-4 border-purple-300 text-center">
+                  <div class="text-4xl font-black text-purple-700 mb-2">V = W / Q</div>
+                  <p class="text-lg text-gray-700">Voltage = Work done / Charge</p>
+                  <p class="text-sm text-gray-600 mt-2">(Measured in Volts, where 1V = 1 Joule per Coulomb)</p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        current: {
+          title: "Understanding Current 🔄",
+          content: `
+            <div class="space-y-6">
+              <div class="phet-card p-8 bg-gradient-to-r from-amber-50 to-amber-100">
+                <h3 class="text-3xl font-black mb-4 text-amber-800">What is Electric Current?</h3>
+                <p class="text-lg leading-relaxed text-gray-800 mb-4">
+                  Current is the <strong>flow of electric charge</strong>. Imagine a river - current is like the <em>amount of water 
+                  flowing past a point every second</em>.
+                </p>
+                <p class="text-lg leading-relaxed text-gray-800">
+                  More specifically, current is the <strong>rate at which charge flows</strong>. If 1 Coulomb of charge flows past 
+                  a point in 1 second, we say the current is 1 Ampere (1A).
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-red-50 to-red-100">
+                <h3 class="text-2xl font-black mb-4 text-red-800 flex items-center">
+                  <span class="text-4xl mr-3">🔄</span>
+                  Two Types of Current Flow
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="bg-white p-6 rounded-xl border-4 border-blue-300">
+                    <h4 class="text-xl font-black text-blue-700 mb-3">Conventional Current →</h4>
+                    <p class="text-gray-800">
+                      Flows from <strong>positive (+) to negative (-)</strong>. This is the historical convention 
+                      we use in circuit diagrams and calculations.
+                    </p>
+                  </div>
+                  <div class="bg-white p-6 rounded-xl border-4 border-red-300">
+                    <h4 class="text-xl font-black text-red-700 mb-3">← Electron Flow</h4>
+                    <p class="text-gray-800">
+                      Electrons actually flow from <strong>negative (-) to positive (+)</strong>. This is the real 
+                      physical movement of charge carriers!
+                    </p>
+                  </div>
+                </div>
+                <p class="text-lg text-gray-800 mt-4 bg-yellow-100 p-4 rounded-lg border-2 border-yellow-400">
+                  <strong>⚠️ Important:</strong> Both are correct! Conventional current is just opposite to electron flow. 
+                  We use conventional current by tradition.
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-green-50 to-green-100">
+                <h3 class="text-2xl font-black mb-4 text-green-800 text-center">⚡ Real-World Current Simulations</h3>
+                <p class="text-center text-gray-700 mb-6 text-lg">Click on each example to see it in action!</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                  
+                  <!-- LED Bulb -->
+                  <div class="bg-white p-6 rounded-xl border-4 border-yellow-300 hover:border-yellow-500 transition-all cursor-pointer" onclick="simulateRealWorld('led')">
+                    <div class="text-center mb-4">
+                      <div class="text-6xl mb-3" id="ledIcon">💡</div>
+                      <h4 class="text-xl font-black text-gray-800">LED Bulb</h4>
+                      <p class="text-sm text-gray-600 mt-2">~0.02A (20mA)</p>
+                      <p class="text-xs text-gray-500 mt-1">Very efficient!</p>
+                    </div>
+                    <canvas id="ledCanvas" width="280" height="180" class="w-full rounded-lg"></canvas>
+                    <div class="mt-4 text-center">
+                      <button onclick="event.stopPropagation(); simulateRealWorld('led')" class="phet-button bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-800 px-6 py-2 text-sm">
+                        ⚡ Simulate
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Phone Charging -->
+                  <div class="bg-white p-6 rounded-xl border-4 border-blue-300 hover:border-blue-500 transition-all cursor-pointer" onclick="simulateRealWorld('phone')">
+                    <div class="text-center mb-4">
+                      <div class="text-6xl mb-3" id="phoneIcon">📱</div>
+                      <h4 class="text-xl font-black text-gray-800">Phone Charging</h4>
+                      <p class="text-sm text-gray-600 mt-2">1-2A</p>
+                      <p class="text-xs text-gray-500 mt-1">Standard USB charging</p>
+                    </div>
+                    <canvas id="phoneCanvas" width="280" height="180" class="w-full rounded-lg"></canvas>
+                    <div class="mt-4 text-center">
+                      <button onclick="event.stopPropagation(); simulateRealWorld('phone')" class="phet-button bg-gradient-to-r from-blue-400 to-blue-500 text-white px-6 py-2 text-sm">
+                        🔌 Simulate
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Circuit Breaker -->
+                  <div class="bg-white p-6 rounded-xl border-4 border-red-300 hover:border-red-500 transition-all cursor-pointer" onclick="simulateRealWorld('breaker')">
+                    <div class="text-center mb-4">
+                      <div class="text-6xl mb-3" id="breakerIcon">🏠</div>
+                      <h4 class="text-xl font-black text-gray-800">Circuit Breaker</h4>
+                      <p class="text-sm text-gray-600 mt-2">15-20A max</p>
+                      <p class="text-xs text-gray-500 mt-1">Safety protection</p>
+                    </div>
+                    <canvas id="breakerCanvas" width="280" height="180" class="w-full rounded-lg"></canvas>
+                    <div class="mt-4 text-center">
+                      <button onclick="event.stopPropagation(); simulateRealWorld('breaker')" class="phet-button bg-gradient-to-r from-red-400 to-red-500 text-white px-6 py-2 text-sm">
+                        ⚠️ Simulate
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Lightning Strike -->
+                  <div class="bg-white p-6 rounded-xl border-4 border-purple-300 hover:border-purple-500 transition-all cursor-pointer" onclick="simulateRealWorld('lightning')">
+                    <div class="text-center mb-4">
+                      <div class="text-6xl mb-3" id="lightningIcon">⚡</div>
+                      <h4 class="text-xl font-black text-gray-800">Lightning Strike</h4>
+                      <p class="text-sm text-gray-600 mt-2">20,000-200,000A</p>
+                      <p class="text-xs text-gray-500 mt-1">Extremely powerful!</p>
+                    </div>
+                    <canvas id="lightningCanvas" width="280" height="180" class="w-full rounded-lg"></canvas>
+                    <div class="mt-4 text-center">
+                      <button onclick="event.stopPropagation(); simulateRealWorld('lightning')" class="phet-button bg-gradient-to-r from-purple-400 to-purple-500 text-white px-6 py-2 text-sm">
+                        ⚡ Simulate
+                      </button>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-purple-50 to-purple-100">
+                <h3 class="text-2xl font-black mb-4 text-purple-800">Key Formula</h3>
+                <div class="bg-white p-6 rounded-xl border-4 border-purple-300 text-center">
+                  <div class="text-4xl font-black text-purple-700 mb-2">I = Q / t</div>
+                  <p class="text-lg text-gray-700">Current = Charge / Time</p>
+                  <p class="text-sm text-gray-600 mt-2">(1 Ampere = 1 Coulomb per second)</p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        resistance: {
+          title: "Understanding Resistance 🔌",
+          content: `
+            <div class="space-y-6">
+              <div class="phet-card p-8 bg-gradient-to-r from-red-50 to-red-100">
+                <h3 class="text-3xl font-black mb-4 text-red-800">What is Resistance?</h3>
+                <p class="text-lg leading-relaxed text-gray-800 mb-4">
+                  Resistance is how much a material <strong>opposes the flow of electric current</strong>. Think of it like 
+                  friction in a pipe - narrow pipes or rough surfaces slow down water flow!
+                </p>
+                <p class="text-lg leading-relaxed text-gray-800">
+                  Materials with <strong>high resistance</strong> (like rubber) block current. Materials with <strong>low 
+                  resistance</strong> (like copper wire) let current flow easily. We measure resistance in <strong>Ohms (Ω)</strong>.
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-amber-50 to-amber-100">
+                <h3 class="text-2xl font-black mb-4 text-amber-800 flex items-center">
+                  <span class="text-4xl mr-3">⚡</span>
+                  Ohm's Law - The Golden Rule!
+                </h3>
+                <div class="bg-white p-8 rounded-xl border-4 border-amber-400 text-center mb-4">
+                  <div class="text-5xl font-black text-amber-700 mb-3">V = I × R</div>
+                  <div class="text-xl text-gray-700 space-y-2">
+                    <div><strong>V</strong> = Voltage (Volts)</div>
+                    <div><strong>I</strong> = Current (Amperes)</div>
+                    <div><strong>R</strong> = Resistance (Ohms)</div>
+                  </div>
+                </div>
+                <p class="text-lg text-gray-800 bg-yellow-100 p-4 rounded-lg border-2 border-yellow-400">
+                  <strong>💡 What it means:</strong> For a given resistance, more voltage creates more current. 
+                  For a given voltage, more resistance means less current!
+                </p>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-blue-50 to-blue-100">
+                <h3 class="text-2xl font-black mb-4 text-blue-800">What Affects Resistance?</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="bg-white p-6 rounded-xl border-4 border-green-300">
+                    <h4 class="text-xl font-black text-green-700 mb-3">🌡️ Temperature</h4>
+                    <p class="text-gray-800">
+                      Higher temperature = <strong>Higher resistance</strong> (for metals). Atoms vibrate more, 
+                      blocking electron flow!
+                    </p>
+                  </div>
+                  <div class="bg-white p-6 rounded-xl border-4 border-orange-300">
+                    <h4 class="text-xl font-black text-orange-700 mb-3">📏 Length</h4>
+                    <p class="text-gray-800">
+                      Longer wire = <strong>Higher resistance</strong>. Electrons have to travel farther 
+                      and encounter more obstacles!
+                    </p>
+                  </div>
+                  <div class="bg-white p-6 rounded-xl border-4 border-purple-300">
+                    <h4 class="text-xl font-black text-purple-700 mb-3">⭕ Cross-Section Area</h4>
+                    <p class="text-gray-800">
+                      Thicker wire = <strong>Lower resistance</strong>. More space means electrons can 
+                      flow more easily!
+                    </p>
+                  </div>
+                  <div class="bg-white p-6 rounded-xl border-4 border-red-300">
+                    <h4 class="text-xl font-black text-red-700 mb-3">🧪 Material</h4>
+                    <p class="text-gray-800">
+                      Different materials have different <strong>resistivity</strong>. Copper is great, 
+                      rubber is an insulator!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-green-50 to-green-100">
+                <h3 class="text-2xl font-black mb-4 text-green-800">Real-World Examples</h3>
+                <ul class="space-y-4 text-lg">
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">🔌</span>
+                    <div>
+                      <strong>Copper Wire:</strong> ~0.0001Ω per meter - excellent conductor!
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">💡</span>
+                    <div>
+                      <strong>Light Bulb Filament:</strong> ~100-200Ω - resists current, gets hot, glows!
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">🔥</span>
+                    <div>
+                      <strong>Electric Heater:</strong> ~10-50Ω - high resistance creates heat
+                    </div>
+                  </li>
+                  <li class="flex items-start">
+                    <span class="text-3xl mr-4">🛡️</span>
+                    <div>
+                      <strong>Rubber Insulation:</strong> Billions of Ohms - blocks current completely!
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="phet-card p-8 bg-gradient-to-r from-purple-50 to-purple-100">
+                <h3 class="text-2xl font-black mb-4 text-purple-800">Resistance Formula</h3>
+                <div class="bg-white p-6 rounded-xl border-4 border-purple-300 text-center">
+                  <div class="text-4xl font-black text-purple-700 mb-2">R = ρL / A</div>
+                  <p class="text-lg text-gray-700 mt-3">
+                    <strong>ρ</strong> = Resistivity (material property)<br>
+                    <strong>L</strong> = Length of conductor<br>
+                    <strong>A</strong> = Cross-sectional area
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        }
+      };
+      
+      const content = discussions[topic];
+      document.getElementById('discussionContent').innerHTML = `
+        <div class="phet-card p-8">
+          <h2 class="text-4xl font-black text-gray-800 mb-6">${content.title}</h2>
+          ${content.content}
+        </div>
+      `;
+    }
+
+    function createVoltageCalculator() {
+      return `
+        <div class="phet-card p-8">
+          <h3 class="text-3xl font-black text-gray-800 mb-6 flex items-center">
+            <span class="text-4xl mr-3">🧮</span>
+            Voltage Calculator
+          </h3>
+          
+          <div class="space-y-6">
+            <div class="bg-gradient-to-r from-red-100 to-red-200 p-6 rounded-xl border-3 border-red-400">
+              <h4 class="text-2xl font-black text-red-800 mb-4">Calculate using V = I × R</h4>
+              
+              <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Current (I) in Amps</label>
+                  <input type="number" id="calcCurrent" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 2">
+                </div>
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Resistance (R) in Ω</label>
+                  <input type="number" id="calcResistance" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 10">
+                </div>
+                <div class="flex items-end">
+                  <button onclick="calculateVoltage()" class="phet-button w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3">
+                    Calculate V
+                  </button>
+                </div>
+              </div>
+              
+              <div id="voltageResult" class="calculator-display p-6 rounded-xl text-center hidden">
+                <div class="text-sm uppercase tracking-wider mb-2 opacity-75">Voltage</div>
+                <div id="voltageResultValue" class="text-4xl font-black"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createCurrentCalculator() {
+      return `
+        <div class="phet-card p-8">
+          <h3 class="text-3xl font-black text-gray-800 mb-6 flex items-center">
+            <span class="text-4xl mr-3">🧮</span>
+            Current Calculator
+          </h3>
+          
+          <div class="space-y-6">
+            <div class="bg-gradient-to-r from-amber-100 to-amber-200 p-6 rounded-xl border-3 border-amber-400">
+              <h4 class="text-2xl font-black text-amber-800 mb-4">Calculate using I = V / R</h4>
+              
+              <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Voltage (V) in Volts</label>
+                  <input type="number" id="calcVoltage2" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 12">
+                </div>
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Resistance (R) in Ω</label>
+                  <input type="number" id="calcResistance2" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 6">
+                </div>
+                <div class="flex items-end">
+                  <button onclick="calculateCurrent()" class="phet-button w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3">
+                    Calculate I
+                  </button>
+                </div>
+              </div>
+              
+              <div id="currentResult" class="calculator-display p-6 rounded-xl text-center hidden">
+                <div class="text-sm uppercase tracking-wider mb-2 opacity-75">Current</div>
+                <div id="currentResultValue" class="text-4xl font-black"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createResistanceCalculator() {
+      return `
+        <div class="phet-card p-8">
+          <h3 class="text-3xl font-black text-gray-800 mb-6 flex items-center">
+            <span class="text-4xl mr-3">🧮</span>
+            Resistance Calculator
+          </h3>
+          
+          <div class="space-y-6">
+            <div class="bg-gradient-to-r from-red-100 to-red-200 p-6 rounded-xl border-3 border-red-400">
+              <h4 class="text-2xl font-black text-red-800 mb-4">Calculate using R = V / I</h4>
+              
+              <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Voltage (V) in Volts</label>
+                  <input type="number" id="calcVoltage3" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 9">
+                </div>
+                <div>
+                  <label class="block font-bold text-gray-700 mb-2">Current (I) in Amps</label>
+                  <input type="number" id="calcCurrent3" class="w-full p-3 border-2 border-gray-300 rounded-lg font-bold" placeholder="e.g., 0.5">
+                </div>
+                <div class="flex items-end">
+                  <button onclick="calculateResistance()" class="phet-button w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3">
+                    Calculate R
+                  </button>
+                </div>
+              </div>
+              
+              <div id="resistanceResult" class="calculator-display p-6 rounded-xl text-center hidden">
+                <div class="text-sm uppercase tracking-wider mb-2 opacity-75">Resistance</div>
+                <div id="resistanceResultValue" class="text-4xl font-black"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function calculateVoltage() {
+      const current = parseFloat(document.getElementById('calcCurrent').value);
+      const resistance = parseFloat(document.getElementById('calcResistance').value);
+      
+      if (isNaN(current) || isNaN(resistance)) {
+        showToast('Please enter valid numbers', 'warning');
+        return;
+      }
+      
+      const voltage = current * resistance;
+      
+      const resultDiv = document.getElementById('voltageResult');
+      const resultValue = document.getElementById('voltageResultValue');
+      
+      resultDiv.classList.remove('hidden');
+      resultValue.textContent = voltage.toFixed(3) + ' V';
+    }
+
+    function calculateCurrent() {
+      const voltage = parseFloat(document.getElementById('calcVoltage2').value);
+      const resistance = parseFloat(document.getElementById('calcResistance2').value);
+      
+      if (isNaN(voltage) || isNaN(resistance) || resistance === 0) {
+        showToast('Please enter valid numbers (R cannot be 0)', 'warning');
+        return;
+      }
+      
+      const current = voltage / resistance;
+      
+      const resultDiv = document.getElementById('currentResult');
+      const resultValue = document.getElementById('currentResultValue');
+      
+      resultDiv.classList.remove('hidden');
+      resultValue.textContent = current.toFixed(3) + ' A';
+    }
+
+    function calculateResistance() {
+      const voltage = parseFloat(document.getElementById('calcVoltage3').value);
+      const current = parseFloat(document.getElementById('calcCurrent3').value);
+      
+      if (isNaN(voltage) || isNaN(current) || current === 0) {
+        showToast('Please enter valid numbers (I cannot be 0)', 'warning');
+        return;
+      }
+      
+      const resistance = voltage / current;
+      
+      const resultDiv = document.getElementById('resistanceResult');
+      const resultValue = document.getElementById('resistanceResultValue');
+      
+      resultDiv.classList.remove('hidden');
+      resultValue.textContent = resistance.toFixed(3) + ' Ω';
+    }
+
+    function showToast(message, type) {
+      const existingToast = document.getElementById('toast');
+      if (existingToast) existingToast.remove();
+      
+      const colors = {
+        success: 'from-green-500 to-green-600',
+        warning: 'from-yellow-500 to-yellow-600',
+        error: 'from-red-500 to-red-600'
+      };
+      
+      const toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.className = `fixed top-4 right-4 bg-gradient-to-r ${colors[type]} text-white px-6 py-4 rounded-xl shadow-2xl font-bold text-lg z-50 animate-bounce`;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'none';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeApp();
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c3896f42074f838',t:'MTc2OTM1MjY5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

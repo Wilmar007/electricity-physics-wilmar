@@ -1,0 +1,160 @@
+/* Special styling for the Series & Parallel Circuits card */
+#series-parallel-card {
+  background: linear-gradient(135deg, #00d4ff 0%, #00ffff 100%);
+  color: #0a0e27;
+  border: 2px solid #00d4ff;
+  box-shadow: 0 4px 20px rgba(0,212,255,0.15);
+    position: static;
+    pointer-events: auto;
+  }
+
+#series-parallel-card .special-card-icon {
+  font-size: 3rem;
+  color: #0a0e27;
+}
+
+#series-parallel-card .special-card-title {
+  color: #0a0e27;
+}
+
+#series-parallel-card .special-card-desc {
+  color: #0a0e27;
+  font-size: 1.05rem;
+}
+
+/* Ensure all home cards are in the grid and do not overlap */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.home-card {
+  position: static;
+  pointer-events: auto;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  text-align: center;
+  background: linear-gradient(135deg, #0f0f1e 0%, #1a0a2e 50%, #0f0f1e 100%);
+  color: #e0e0e0;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.controls {
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+label {
+  display: block;
+  margin: 15px 0 8px 0;
+  color: #00ff88;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #1a0a2e 0%, #00ff88 100%);
+  outline: none;
+  -webkit-appearance: none;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00ff88;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+  transition: all 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.9);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00ff88;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+  transition: all 0.3s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.9);
+}
+
+canvas {
+  background: linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 100%);
+  border: 2px solid #00ff88;
+  margin: 20px auto;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  display: block;
+}
+
+.output {
+  margin-top: 20px;
+  padding: 20px;
+  font-size: 1.1rem;
+  background: rgba(0, 255, 136, 0.1);
+  border: 2px solid #00ff88;
+  border-radius: 10px;
+  color: #00ff88;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+/* 🔒 FORCE GLOBAL BACKGROUND – DO NOT REMOVE */
+#app {
+  background: radial-gradient(circle at top, #12002f, var(--bg)) !important;
+}
+/* ✅ CARD BACKGROUND – READABLE */
+.home-card,
+.card {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.home-card h2,
+.home-card p,
+.home-card small,
+.card h2,
+.card p {
+  color: #ffffff !important;
+}
+/* ✅ Allow iframe interaction */
+.section iframe {
+  pointer-events: auto;
+}
+
+.section {
+  overflow: visible;
+}

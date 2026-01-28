@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ohm’s Law Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+    /* MINI SIMULATOR */
+.mini-sim{
+  margin-top:10px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  box-shadow:inset 0 0 15px rgba(0,246,255,.25);
+}
+
+.sim-row{
+  display:grid;
+  grid-template-columns:110px 1fr 70px;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+  font-size:13px;
+}
+
+.sim-row input[type=range]{
+  accent-color:#00f6ff;
+}
+
+.wire-mini{
+  position:relative;
+  height:10px;
+  background:linear-gradient(90deg,#00f6ff,#8b5cf6);
+  border-radius:999px;
+  overflow:hidden;
+  margin:8px 0;
+}
+
+.electron-mini{
+  position:absolute;
+  top:50%;
+  width:8px;
+  height:8px;
+  background:#fff;
+  border-radius:50%;
+  transform:translateY(-50%);
+  box-shadow:0 0 8px #00f6ff;
+}
+
+.current-readout{
+  text-align:center;
+  font-size:14px;
+  margin-top:4px;
+}
+:root{
+  --cyan:#00f6ff;
+  --violet:#8b5cf6;
+  --bg:#070015;
+  --card:rgba(15,10,45,.92);
+  --correct:#22c55e;
+  --wrong:#ef4444;
+  --text:#e5f7ff;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:system-ui,sans-serif;
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,246,255,.25), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139,92,246,.25), transparent 45%),
+    linear-gradient(135deg,#070015,#12002f,#1b0f4f);
+}
+
+.quiz{
+  width:92vw;
+  max-width:1000px;
+  height:92vh;
+  background:var(--card);
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 0 40px rgba(0,246,255,.4);
+  display:flex;
+  flex-direction:column;
+}
+
+/* INPUTS */
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.25);
+  margin-bottom:6px;
+  font-size:16px;
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+}
+
+/* PROGRESS */
+.progress-area{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:6px 0;
+}
+.circle{
+  width:52px;height:52px;border-radius:50%;
+  background:conic-gradient(var(--cyan) 0deg,#1b2a40 0deg);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 15px var(--cyan);
+  font-size:13px;
+}
+.progress{
+  height:8px;background:#1b2a40;border-radius:999px;
+  overflow:hidden;margin:6px 0;
+}
+.progress span{
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));
+  transition:width .3s ease;
+}
+
+/* QUESTION */
+.question{
+  font-size:20px;
+  margin:8px 0;
+}
+
+/* ANSWERS */
+.answers{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px !important;   /* tighter spacing */
+  flex:0;               /* STOP stretching */
+}
+.answers button{
+  padding:6px 8px !important;   /* FORCE small */
+  height:38px !important;       /* FORCE fixed height */
+  min-height:38px !important;
+  max-height:38px !important;
+
+  border-radius:8px;
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+
+  font-size:13px !important;    /* FORCE smaller text */
+  line-height:1.1 !important;
+  white-space:nowrap;           /* no wrapping = no tall boxes */
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  cursor:pointer;
+}
+.correct{
+  background:rgba(34,197,94,.35)!important;
+}
+.wrong{
+  background:rgba(239,68,68,.35)!important;
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  gap:10px;
+  margin-top:6px;
+}
+.nav button{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.07);
+  color:var(--text);
+  font-size:15px;
+  cursor:pointer;
+}
+/* === FINAL OVERRIDES (WIN OVER ALL 7 STYLES) === */
+
+select,
+input{
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.35) !important;
+  color: var(--text) !important;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 14px rgba(0,246,255,0.45) !important;
+}
+
+select option{
+  background: #0b0225 !important;
+  color: #e5f7ff !important;
+}
+</style>
+</head>
+
+<body>
+
+<div class="quiz">
+  <input placeholder="Enter your name">
+  <select>
+    <option>Select Section</option>
+    <option>STEM 201</option><option>STEM 202</option><option>STEM 203</option>
+    <option>STEM 204</option><option>STEM 205</option>
+    <option>STEM 206</option><option>STEM 207</option>
+  </select>
+
+  <div class="progress-area">
+    <div id="counter"></div>
+    <div class="circle" id="circle"><span id="circleText">0%</span></div>
+    <div id="percent"></div>
+  </div>
+
+  <div class="progress"><span id="bar"></span></div>
+
+  <div class="question" id="question"></div>
+  <div class="answers" id="answers"></div>
+ 
+
+<div class="nav">
+  <button id="prev">Previous</button>
+  <button id="next">Next</button>
+</div>
+
+<!-- Mini Ohm's Law Simulator -->
+<div class="mini-sim">
+  <div class="sim-row">
+    <label>Voltage (V)</label>
+    <input type="range" id="vSim" min="1" max="20" value="10">
+    <span id="vVal">10 V</span>
+  </div>
+
+  <div class="sim-row">
+    <label>Resistance (Ω)</label>
+    <input type="range" id="rSim" min="1" max="50" value="10">
+    <span id="rVal">10 Ω</span>
+  </div>
+
+  <div class="wire-mini">
+    <div class="electron-mini"></div>
+    <div class="electron-mini"></div>
+    <div class="electron-mini"></div>
+  </div>
+
+  <div class="current-readout">
+    Current: <strong><span id="iVal">1.00</span> A</strong>
+  </div>
+</div>
+
+<script>
+    const vSim=document.getElementById("vSim");
+const rSim=document.getElementById("rSim");
+const vVal=document.getElementById("vVal");
+const rVal=document.getElementById("rVal");
+const iVal=document.getElementById("iVal");
+const electronsMini=document.querySelectorAll(".electron-mini");
+
+let ePos=[0,40,80];
+
+function updateSim(){
+  const V=+vSim.value;
+  const R=+rSim.value;
+  const I=(V/R).toFixed(2);
+
+  vVal.textContent=V+" V";
+  rVal.textContent=R+" Ω";
+  iVal.textContent=I;
+
+  electronsMini.forEach((e,i)=>{
+    ePos[i]+=Math.max(0.5,I*1.5);
+    if(ePos[i]>120) ePos[i]=0;
+    e.style.left=ePos[i]+"px";
+  });
+
+  requestAnimationFrame(updateSim);
+}
+
+updateSim();
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+let quiz=[
+{q:"What is the mathematical formula that represents Ohm’s Law?",a:["V = I × R","I = V × R","R = V × I","V = R ÷ I"],c:0},
+{q:"What unit is used to measure electrical resistance?",a:["Ohm","Ampere","Volt","Watt"],c:0},
+{q:"How does the current change when the applied voltage is reduced?",a:["The current decreases","The current increases","The current stays the same","The current becomes zero"],c:0},
+{q:"What happens to the current when resistance increases while voltage is constant?",a:["The current decreases","The current increases","The current is unchanged","The current reverses"],c:0},
+{q:"What unit is used to measure electric current?",a:["Ampere","Volt","Ohm","Watt"],c:0},
+{q:"What is the current in a circuit with 10 V and 5 Ω?",a:["2 A","0.5 A","5 A","10 A"],c:0},
+{q:"Which quantity opposes the flow of electric current?",a:["Resistance","Voltage","Power","Charge"],c:0},
+{q:"What happens to the current if the voltage is doubled?",a:["It doubles","It halves","It stays the same","It becomes zero"],c:0},
+{q:"What symbol represents resistance?",a:["R","V","I","P"],c:0},
+{q:"Why is Ohm’s Law important in circuit analysis?",a:["It relates voltage, current, and resistance","It stores energy","It produces light","It generates magnetism"],c:0}
+];
+
+shuffle(quiz);
+quiz.forEach(q=>{
+  const ans=q.a[q.c];
+  shuffle(q.a);
+  q.c=q.a.indexOf(ans);
+});
+
+let i=0;
+let chosen=Array(quiz.length).fill(null);
+
+function score(){
+  return chosen.filter((v,idx)=>v===quiz[idx].c).length;
+}
+
+function load(){
+  const p=Math.round((i/quiz.length)*100);
+  bar.style.width=p+"%";
+  counter.textContent=`Question ${i+1} of ${quiz.length}`;
+  percent.textContent=`Score: ${score()} / ${quiz.length}`;
+  circle.style.background=`conic-gradient(var(--cyan) ${p*3.6}deg,#1b2a40 0deg)`;
+  circleText.textContent=p+"%";
+
+  question.textContent=quiz[i].q;
+  answers.innerHTML="";
+  quiz[i].a.forEach((t,idx)=>{
+    const b=document.createElement("button");
+    b.textContent=t;
+    if(chosen[i]!==null){
+      if(idx===quiz[i].c) b.classList.add("correct");
+      if(idx===chosen[i] && idx!==quiz[i].c) b.classList.add("wrong");
+      b.disabled=true;
+    }
+    b.onclick=()=>{
+      chosen[i]=idx;
+      load();
+    };
+    answers.appendChild(b);
+  });
+}
+
+next.onclick=()=>{
+  if(i<quiz.length-1){
+    i++; load();
+}else{
+  const s = score();
+const pass = s >= 8;
+
+if (pass) {
+  sessionStorage.setItem("ohmsPassed", "true");
+}
+
+question.textContent =
+  `Final Score: ${s}/10 - ${pass ? "PASSED ✅" : "FAILED ❌ (75% required)"}`;
+
+  answers.innerHTML = "";
+}
+};
+prev.onclick=()=>{if(i>0){i--;load();}};
+
+load();
+
+</script>
+
+</body>
+</html>
