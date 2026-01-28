@@ -1,1 +1,1 @@
-# electricity-physics-wilmar
+# physics-circuit-simulation
