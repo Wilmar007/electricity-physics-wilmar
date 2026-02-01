@@ -158,3 +158,8 @@ canvas {
 .section {
   overflow: visible;
 }
+.circuit-container {
+  height: 1000px;          /* 👈 change THIS number */
+  min-height: 520px;
+  overflow: hidden;
+}
