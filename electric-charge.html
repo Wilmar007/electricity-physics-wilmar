@@ -19,6 +19,87 @@
             overflow-x: hidden;
         }
 
+        // Unified induction drop handler used by the UI
+        function handleInductionDropMaster(type, originalItem) {
+            // Choose the visible induction zone (prefer the one in the active charging-method section)
+            let zone = document.querySelector('.charging-method-section:not([style*="display: none"]) #inductionZone') || document.getElementById('inductionZone');
+            if (!zone) zone = document.getElementById('inductionZone');
+            if (!zone) return;
+
+            if (!zone.droppedItems) zone.droppedItems = [];
+
+            // Clear placeholder text on first drop
+            if (zone.droppedItems.length === 0) {
+                zone.innerHTML = '';
+            }
+
+            const simEl = document.createElement('div');
+            simEl.className = 'induction-item';
+            simEl.dataset.type = type;
+            const chargeVal = originalItem ? (originalItem.getAttribute('data-charge') || '0') : '0';
+            simEl.dataset.charge = chargeVal;
+
+            // Basic visuals per type
+            switch(type) {
+                case 'charged-rod':
+                case 'charged-rod-approach':
+                    simEl.style.background = 'linear-gradient(145deg, #FFD700, #FFA500)';
+                    simEl.innerHTML = '<div class="object-visual">⚡</div><div class="object-name">Charged Rod</div>';
+                    simEl.classList.add('charge-effect');
+                    break;
+                case 'neutral-conductor':
+                case 'neutral-conductor-sphere':
+                    simEl.style.background = 'linear-gradient(145deg, #C0C0C0, #808080)';
+                    simEl.innerHTML = '<div class="object-visual">⚪</div><div class="object-name">Neutral Conductor</div>';
+                    break;
+                case 'ground-wire':
+                case 'ground-connection':
+                    simEl.style.background = 'linear-gradient(145deg, #8B4513, #A0522D)';
+                    simEl.innerHTML = '<div class="object-visual">🌍</div><div class="object-name">Ground Wire</div>';
+                    break;
+                case 'remove-ground':
+                    simEl.style.background = 'linear-gradient(145deg, #FF6B6B, #DC143C)';
+                    simEl.innerHTML = '<div class="object-visual">🔌</div><div class="object-name">Remove Ground</div>';
+                    break;
+                case 'electroscope':
+                case 'electroscope-leaves':
+                    simEl.style.background = 'linear-gradient(145deg, #DAA520, #B8860B)';
+                    simEl.innerHTML = '<div class="object-visual">📏</div><div class="object-name">Electroscope</div>';
+                    break;
+                case 'metal-can':
+                    simEl.style.background = 'linear-gradient(145deg, #C0C0C0, #808080)';
+                    simEl.innerHTML = '<div class="object-visual">🥫</div><div class="object-name">Metal Can</div>';
+                    break;
+                default:
+                    simEl.style.background = 'linear-gradient(145deg, #333, #222)';
+                    simEl.innerHTML = `<div class="object-name">${type}</div>`;
+                    break;
+            }
+
+            // remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = function() {
+                // remove from droppedItems
+                zone.droppedItems = zone.droppedItems.filter(it => it.element !== simEl);
+                simEl.remove();
+                // re-analyze
+                analyzeInductionProcess(zone.droppedItems, zone.querySelector('#fieldViz') || zone.querySelector('.induction-display') || zone);
+            };
+            simEl.appendChild(removeBtn);
+
+            zone.appendChild(simEl);
+
+            // tracking
+            zone.droppedItems.push({ type: type, charge: chargeVal, element: simEl });
+
+            // Re-run analysis for this zone
+            // enable dragging inside the induction zone so proximity can change
+            try { setupInductionDrag(simEl); } catch(e) {}
+            analyzeInductionProcess(zone.droppedItems, zone.querySelector('#fieldViz') || zone.querySelector('.induction-display') || zone);
+        }
+
         html {
             height: 100%;
         }
@@ -41,7 +122,8 @@
         .lightning {
             position: absolute;
             width: 2px;
-            background: linear-gradient(to bottom, #FFD700, #FFFFFF, #87CEEB);
+            /* remove gold; use subtle white->blue gradient */
+            background: linear-gradient(to bottom, rgba(255,255,255,0.0), #FFFFFF, #87CEEB);
             animation: lightning 3s infinite;
             opacity: 0;
         }
@@ -55,7 +137,8 @@
             position: absolute;
             width: 4px;
             height: 4px;
-            background: #FFD700;
+            /* use blue cyan spark instead of gold */
+            background: #87CEEB;
             border-radius: 50%;
             animation: spark 2s infinite;
         }
@@ -321,6 +404,169 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
+        /* Overrides to match blue neon site theme and remove yellow/gold backgrounds */
+        body {
+            background: transparent !important;
+            animation: none !important;
+            background-size: initial !important;
+        }
+
+        /* Make primary containers translucent dark or transparent */
+        .menu-box,
+        .drag-items,
+        .draggable-item,
+        .drop-zone,
+        .simulation-area,
+        .explanation-panel,
+        .footer,
+        .quiz-container,
+        .quiz-question,
+        .real-object-visual {
+            background: rgba(0,0,0,0.25) !important;
+            box-shadow: none !important;
+            border-color: rgba(0,150,255,0.14) !important;
+        }
+
+        /* Remove gold/yellow highlights from hover effects */
+        .menu-box:hover { box-shadow: 0 15px 30px rgba(0,150,255,0.12) !important; }
+        .menu-box::before { opacity: 0 !important; }
+
+        /* Drop zone highlight should use translucent blue */
+        .drop-zone.drag-over { border-color: rgba(0,150,255,0.28) !important; background: rgba(0,0,0,0.30) !important; }
+
+        /* Keep neon/glow effects but prefer blue tints where earlier used gold */
+        .physics-active { box-shadow: 0 0 18px rgba(0,180,255,0.9) !important; }
+        .simulation-object .charge-indicator.positive { background: linear-gradient(145deg, rgba(0,150,255,0.2), rgba(0,100,200,0.2)) !important; }
+
+        /* Ensure draggable items are readable on dark translucent background */
+        .draggable-item { color: inherit !important; }
+
+        /* Additional overrides for remaining yellow/gold backgrounds and highlights */
+        .quiz-navigation,
+        .quiz-option,
+        .quiz-question,
+        .competency-btn,
+        .charging-method-btn,
+        .real-object-visual,
+        .explanation-text,
+        .quiz-score {
+            background: rgba(0,0,0,0.25) !important;
+            border-color: rgba(0,150,255,0.14) !important;
+            box-shadow: none !important;
+        }
+
+        /* Replace spark/glow yellow tints with blue where used in animations */
+        .physics-active, .simulation-object .charge-indicator.positive, .quiz-score { box-shadow: 0 0 18px rgba(0,180,255,0.9) !important; }
+
+        /* Override remaining gold box-shadows and highlights with blue tints */
+        .menu-box:hover, .draggable-item:hover, .real-object-visual:hover, .quiz-option:hover {
+            box-shadow: 0 12px 28px rgba(0,150,255,0.12) !important;
+        }
+
+        /* Replace small gold accents (pseudo elements/text) with blue tints */
+        .rubbing-animation::before { color: #7EE7FF !important; }
+
+        /* LEFT SIDEBAR (Charged / Neutral / Real Induction) - neon blue theme */
+        /* Sidebar container: dark-blue gradient, soft cyan glow and border */
+        .drag-items {
+            background: linear-gradient(180deg, rgba(0,18,40,0.95), rgba(0,36,70,0.9)) !important;
+            border: 1px solid rgba(0,200,255,0.18) !important;
+            box-shadow: 0 6px 30px rgba(0,150,255,0.12), inset 0 0 40px rgba(0,36,70,0.35) !important;
+            padding: 0.75rem !important;
+            min-height: 420px !important;
+            border-radius: 12px !important;
+            transition: box-shadow 250ms ease, transform 250ms ease;
+        }
+
+        /* Scrollbar subtle and matching theme */
+        .drag-items::-webkit-scrollbar { width: 10px; }
+        .drag-items::-webkit-scrollbar-thumb { background: rgba(0,120,200,0.18); border-radius: 8px; }
+
+        /* Section titles inside sidebar become cyan and more legible */
+        .drag-items .section-title {
+            color: #BEEBFF !important;
+            font-weight: 700 !important;
+            text-shadow: 0 0 8px rgba(0,180,255,0.18) !important;
+            background: transparent !important;
+            margin: 0.4rem 0 0.6rem 0 !important;
+            padding: 0.25rem 0 !important;
+        }
+
+        /* Draggable item cards in sidebar: darker panels with subtle inner glow */
+        .drag-items .draggable-item {
+            background: linear-gradient(145deg, rgba(0,36,70,0.9), rgba(0,18,40,0.92)) !important;
+            color: #E6FFFF !important;
+            padding: 0.9rem 1rem !important;
+            margin: 0.45rem 0 !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(0,160,255,0.12) !important;
+            box-shadow: 0 6px 18px rgba(0,120,200,0.06), inset 0 0 12px rgba(0,80,140,0.18) !important;
+            transform-origin: left center !important;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+            font-weight: 700 !important;
+            cursor: grab !important;
+            text-align: center !important;
+        }
+
+        /* Brighter emoji/icons via text-shadow and stronger contrast */
+        .drag-items .draggable-item { text-shadow: 0 0 8px rgba(0,200,255,0.18); }
+
+        /* --- Text contrast fixes for sidebar (charged objects / particles) --- */
+        /* Ensure all sidebar text is bright, fully opaque, and readable */
+        .drag-items, .drag-items * {
+            color: #e6f7ff !important;
+            opacity: 1 !important;
+            -webkit-font-smoothing: antialiased !important;
+            text-rendering: optimizeLegibility !important;
+        }
+
+        /* Make item labels extra legible while preserving emoji colors */
+        .drag-items .draggable-item {
+            color: #e6f7ff !important;
+            opacity: 1 !important;
+            text-shadow: 0 0 6px rgba(0,255,255,0.12) !important;
+        }
+
+        /* Headings inside sidebar should be brighter cyan with a soft glow */
+        .drag-items .section-title {
+            color: #BEEBFF !important;
+            font-weight: 800 !important;
+            text-shadow: 0 0 6px rgba(0,255,255,0.4) !important;
+            letter-spacing: 0.2px !important;
+        }
+
+        /* If any inline elements set muted colors, prefer this stronger rule for labels */
+        .drag-items .draggable-item span,
+        .drag-items .draggable-item strong,
+        .drag-items .draggable-item em {
+            color: #e6f7ff !important;
+            opacity: 1 !important;
+        }
+
+        /* Slightly increase font-weight for particle labels to help readability */
+        .drag-items .draggable-item { font-weight: 700 !important; }
+
+        /* Hover: soft neon glow and slight scale-up to match main canvas intensity */
+        .drag-items .draggable-item:hover {
+            transform: scale(1.04) translateZ(0) !important;
+            box-shadow: 0 12px 36px rgba(0,180,255,0.18), inset 0 0 18px rgba(0,120,200,0.06) !important;
+        }
+
+        /* Focus/active state for accessibility */
+        .drag-items .draggable-item:focus,
+        .drag-items .draggable-item:active {
+            outline: 2px solid rgba(0,200,255,0.18) !important;
+            transform: scale(1.02) !important;
+        }
+
+        /* Sidebar container glow to visually tie into main simulation area */
+        .drag-drop-container > .drag-items {
+            box-shadow: 0 0 40px rgba(0,150,255,0.08), inset 0 0 30px rgba(0,30,70,0.45) !important;
+            border-left: 3px solid rgba(0,180,255,0.12) !important;
+        }
+
+        /* Keep other global overrides intact for non-sidebar elements */
+
         .section-title {
             color: #FFFFFF;
             font-size: 1.2rem;
@@ -328,6 +574,55 @@
             margin-bottom: 1rem;
             text-align: center;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        /* FORCE OVERRIDE: ensure sidebar text is fully visible on all displays */
+        .sidebar *,
+        .fundamental-particles *,
+        .charged-objects * {
+            opacity: 1 !important;
+            color: #f0fbff !important;
+            font-weight: 600 !important;
+            text-shadow: 0 0 6px rgba(0,255,255,0.45) !important;
+        }
+
+        .sidebar h3,
+        .sidebar h4 {
+            color: #7df9ff !important;
+            font-weight: 700 !important;
+        }
+
+        /* Apply same force-override to Fundamental/Subatomic panels and their parents */
+        .particle-palette *,
+        .particle-playground *,
+        .playground-container *,
+        .playground-area *,
+        .demo-box * {
+            opacity: 1 !important;
+            color: #f0fbff !important;
+            font-weight: 600 !important;
+            text-shadow: 0 0 6px rgba(0,255,255,0.45) !important;
+        }
+
+        /* Ensure parent containers don't apply opacity/filters/backdrop-filter */
+        .playground-container,
+        .particle-palette,
+        .particle-playground,
+        .playground-area,
+        .demo-box {
+            opacity: 1 !important;
+            filter: none !important;
+            -webkit-filter: none !important;
+            backdrop-filter: none !important;
+        }
+
+        /* Headings in these panels use the same brighter cyan as sidebar headings */
+        .particle-palette .section-title,
+        .particle-playground .section-title,
+        .demo-box h4 {
+            color: #7df9ff !important;
+            font-weight: 700 !important;
+            text-shadow: 0 0 6px rgba(0,255,255,0.35) !important;
         }
 
         .explanation-panel {
@@ -635,6 +930,20 @@
             box-shadow: none;
             animation: realObjectFloat 3s ease-in-out infinite;
             backdrop-filter: none;
+        }
+
+        /* Visual-only: increase size of objects after they are dropped into simulation areas (~2x) */
+        #simulationArea .simulation-object,
+        #conductionSimulationArea .simulation-object,
+        #inductionResult .simulation-object,
+        #subatomicPlaygroundArea .subatomic-particle,
+        #playgroundArea .subatomic-particle,
+        #realWorldPlaygroundArea .real-world-particle {
+            transform: scale(2) !important;
+            transform-origin: center center !important;
+            transition: transform 120ms ease !important;
+            z-index: 1000 !important;
+            display: inline-flex !important;
         }
 
         .simulation-object .object-icon {
@@ -1585,6 +1894,26 @@
                 align-items: stretch;
             }
         }
+        /* FORCE SIDEBAR VISIBILITY – DO NOT REMOVE */
+.sidebar,
+.left-panel,
+.objects-panel,
+.fundamental-particles,
+.charged-objects {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* FORCE TEXT VISIBILITY */
+.sidebar *,
+.left-panel *,
+.objects-panel *,
+.fundamental-particles *,
+.charged-objects * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 6px rgba(0,255,255,0.5);
+}
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -1600,7 +1929,7 @@
     <div class="menu-grid" id="mainMenu">
      <div class="menu-box" onclick="showModule1()"><span class="menu-icon">⚡</span>
       <div class="menu-title">
-       Module 1
+       Elictric Charge
       </div>
       <div class="menu-description">
        Interactive simulations covering electrostatics, electric fields, and circuits
@@ -1630,7 +1959,7 @@
        Test your knowledge with engaging physics challenges
       </div>
      </div>
-    </div><!-- Module 1 Simulation -->
+    </div><!-- Simulation -->
     <div class="simulation-area" id="module1Area">
      <div class="simulation-header"><button class="back-button" onclick="showMainMenu()">← Back to Menu</button>
       <h2 class="simulation-title">Electric Charge &amp; Electrostatics</h2>
@@ -2828,7 +3157,8 @@
             // Create sparks
             for (let i = 0; i < 15; i++) {
                 const spark = document.createElement('div');
-                spark.className = 'spark';
+                try { soundManager.playSpark(); } catch(e){}
+                // Remove spark after animation
                 spark.style.left = Math.random() * 100 + '%';
                 spark.style.top = Math.random() * 100 + '%';
                 spark.style.animationDelay = Math.random() * 2 + 's';
@@ -3277,11 +3607,89 @@
         let subatomicSimulationParticles = [];
         let realWorldSimulationParticles = [];
 
+        /* Sound manager: small, synthesized UI sounds using WebAudio (preloaded on first user gesture) */
+        const soundManager = (function(){
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            let ctx = null;
+            let master = null;
+            let muted = localStorage.getItem('ec_sound_muted') === '1';
+
+            function ensure() {
+                if (!ctx) {
+                    try {
+                        ctx = new AudioCtx();
+                        master = ctx.createGain();
+                        master.gain.value = muted ? 0 : 0.06; // low default volume
+                        master.connect(ctx.destination);
+                    } catch (e) {
+                        ctx = null;
+                    }
+                } else if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+            }
+
+            function playTone(frequency, duration = 0.08, type = 'sine', volume = 0.06) {
+                ensure(); if (!ctx) return;
+                const o = ctx.createOscillator(); const g = ctx.createGain();
+                o.type = type; o.frequency.value = frequency;
+                g.gain.value = volume;
+                o.connect(g); g.connect(master);
+                const now = ctx.currentTime;
+                g.gain.setValueAtTime(volume, now);
+                g.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                o.start(now); o.stop(now + duration + 0.02);
+            }
+
+            function playNoise(duration = 0.12, volume = 0.03) {
+                ensure(); if (!ctx) return;
+                const bufferSize = ctx.sampleRate * duration;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (1 - i/bufferSize);
+                const src = ctx.createBufferSource(); src.buffer = buffer;
+                const g = ctx.createGain(); g.gain.value = volume;
+                src.connect(g); g.connect(master);
+                src.start(); src.stop(ctx.currentTime + duration + 0.02);
+            }
+
+            return {
+                playWhoosh: function(){ playNoise(0.12, 0.02); },
+                playClick: function(){ playTone(1000, 0.06, 'square', 0.05); },
+                playRub: function(){ playNoise(0.18, 0.035); },
+                playZap: function(){ playTone(1500, 0.04, 'sawtooth', 0.06); playNoise(0.06,0.02); },
+                playSpark: function(){ playTone(1800,0.03,'triangle',0.05); },
+                playReset: function(){ playTone(600,0.08,'sine',0.04); },
+                toggleMute: function(){ muted = !muted; localStorage.setItem('ec_sound_muted', muted ? '1' : '0'); if (master) master.gain.value = muted ? 0 : 0.06; return !muted; },
+                isMuted: function(){ return muted; },
+                ensureUserGesture: function(){ ensure(); }
+            };
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             createElectricityEffects();
             setupDragAndDrop();
             setupMainSimulationDragAndDrop();
+            // initialize a small sound toggle UI and ensure audio context created on first interaction
+            setupSoundToggleUI();
         });
+
+        function setupSoundToggleUI() {
+            // create a small floating toggle button
+            const btn = document.createElement('button');
+            btn.id = 'soundToggleBtn';
+            btn.title = 'Toggle simulation sounds';
+            btn.style.cssText = 'position:fixed;right:12px;top:12px;z-index:99999;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,0.5);color:#7df9ff;border:1px solid rgba(125,249,255,0.14);backdrop-filter:blur(4px);cursor:pointer;font-weight:700;';
+            btn.innerText = soundManager.isMuted() ? '🔈' : '🔊';
+            btn.addEventListener('click', (e) => {
+                soundManager.ensureUserGesture();
+                const nowUnmuted = soundManager.toggleMute();
+                btn.innerText = nowUnmuted ? '🔊' : '🔈';
+            });
+            document.body.appendChild(btn);
+            // ensure AudioContext is resumed on first user gesture anywhere
+            ['pointerdown','click','keydown'].forEach(evt => document.addEventListener(evt, () => soundManager.ensureUserGesture(), {once:true}));
+        }
 
         function setupDragAndDrop() {
             const draggableItems = document.querySelectorAll('.draggable-item');
@@ -3387,6 +3795,7 @@
                 draggedElement = this;
                 this.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
+                try { soundManager.playWhoosh(); } catch(e){}
             });
 
             item.addEventListener('dragend', function() {
@@ -3416,8 +3825,10 @@
                 draggedItem.parentNode.appendChild(newItem);
                 // Re-setup drag and drop for the new item
                 setupSingleItemDragAndDrop(newItem);
+                try { soundManager.playClick(); } catch(e){}
             } else {
                 draggedItem.remove();
+                try { soundManager.playClick(); } catch(e){}
             }
         }
 
@@ -3438,6 +3849,7 @@
             // Create particle in playground
             const particle = createPlaygroundParticle(particleType, x, y);
             playgroundArea.appendChild(particle);
+            try { soundManager.playClick(); } catch(e){}
             
             // Add to tracking array
             playgroundParticles.push(particle);
@@ -3496,6 +3908,58 @@
             particle.appendChild(removeBtn);
             
             return particle;
+        }
+
+        // Helper: extract icon and name from a sidebar/draggable element when available
+        function extractIconNameFromElement(elem) {
+            if (!elem) return {icon: null, name: null};
+            // Look for explicit structured icon/name
+            const iconEl = elem.querySelector && elem.querySelector('.object-icon');
+            const nameEl = elem.querySelector && elem.querySelector('.object-name');
+            if (iconEl || nameEl) {
+                return { icon: iconEl ? iconEl.innerHTML : null, name: nameEl ? nameEl.textContent.trim() : null };
+            }
+
+            // Fallback: try to parse a leading emoji or glyph from innerText
+            const txt = (elem.textContent || '').trim();
+            if (!txt) return {icon: null, name: null};
+
+            // Common pattern: emoji followed by space then label
+            const match = txt.match(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\w\u00A9\u00AE\u203C\u2049\u2122]+)\s+(.*)$/u);
+            if (match) {
+                return { icon: match[1], name: match[2].trim() };
+            }
+
+            return { icon: null, name: txt };
+        }
+
+        // Helper: determine if two simulation objects are the same material/type
+        function objectsSameMaterial(obj1, obj2) {
+            if (!obj1 || !obj2) return false;
+            const t1 = obj1.dataset.type;
+            const t2 = obj2.dataset.type;
+            if (t1 && t2 && t1 === t2) return true;
+
+            // Try to resolve material from known data maps
+            let d1 = null, d2 = null;
+            try { d1 = (typeof getObjectData === 'function') ? getObjectData(t1) : null; } catch(e) {}
+            try { if (!d1 && typeof getConductionObjectData === 'function') d1 = getConductionObjectData(t1); } catch(e) {}
+            try { if (!d1 && typeof getRealWorldParticleData === 'function') d1 = getRealWorldParticleData(t1); } catch(e) {}
+            try { d2 = (typeof getObjectData === 'function') ? getObjectData(t2) : null; } catch(e) {}
+            try { if (!d2 && typeof getConductionObjectData === 'function') d2 = getConductionObjectData(t2); } catch(e) {}
+            try { if (!d2 && typeof getRealWorldParticleData === 'function') d2 = getRealWorldParticleData(t2); } catch(e) {}
+
+            if (d1 && d2 && d1.material && d2.material && d1.material === d2.material) return true;
+            return false;
+        }
+
+        function showPhysicsInfoMessage(container, text) {
+            if (!container) return;
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#E6FFFF;padding:0.6rem 1rem;border-radius:8px;border:1px solid rgba(125,249,255,0.14);z-index:1200;font-weight:700;';
+            msg.textContent = text;
+            container.appendChild(msg);
+            setTimeout(() => { if (msg.parentNode) msg.remove(); }, 3000);
         }
 
         function setupPlaygroundParticleDrag(particle) {
@@ -4262,8 +4726,8 @@
             particle.dataset.charge = charge;
             particle.style.left = Math.max(0, Math.min(x, 500)) + 'px';
             particle.style.top = Math.max(0, Math.min(y, 320)) + 'px';
-            
-            // Set particle content and properties based on type
+
+            // Set particle content and properties based on type (use canonical mapping)
             const particleData = getRealWorldParticleData(type, charge);
             particle.innerHTML = `
                 <div class="object-icon">${particleData.icon}</div>
@@ -6330,7 +6794,8 @@
                     handleConductionDrop(type, originalItem);
                     break;
                 case 'induction':
-                    handleInductionDrop(type, originalItem);
+                    handleInductionDropMaster(type, originalItem);
+                    break;
                     break;
             }
         }
@@ -6357,10 +6822,15 @@
             simObject.dataset.type = type;
             simObject.dataset.triboelectric = triboelectric;
             simObject.draggable = true;
-            
+
+            // If the original sidebar item provides its own icon/name, prefer that
+            const extracted = extractIconNameFromElement(originalItem);
+            const iconHtml = extracted.icon || objectData.icon;
+            const nameText = extracted.name || objectData.name;
+
             simObject.innerHTML = `
-                <div class="object-icon">${objectData.icon}</div>
-                <div class="object-name">${objectData.name}</div>
+                <div class="object-icon">${iconHtml}</div>
+                <div class="object-name">${nameText}</div>
                 <div class="charge-indicator" style="display: none;"></div>
                 <button class="remove-btn" onclick="removeSimulationObject(this.parentElement, '${type}')">×</button>
             `;
@@ -6679,6 +7149,13 @@
                 return; // Already rubbing together
             }
             
+            // If objects are same material or identical type, do NOT transfer charge
+            if (objectsSameMaterial(obj1, obj2)) {
+                const sim = document.getElementById('simulationArea');
+                showPhysicsInfoMessage(sim, 'No net charge transfer occurs because both objects have the same electron affinity.');
+                return;
+            }
+
             // Mark objects as rubbing together
             obj1.dataset.rubbingWith = obj2.dataset.type;
             obj2.dataset.rubbingWith = obj1.dataset.type;
@@ -6703,6 +7180,7 @@
             
             // Start continuous rubbing process
             startContinuousRubbing(positiveObject, negativeObject, pairId);
+            try { soundManager.playRub(); } catch(e){}
         }
         
         function startContinuousRubbing(positiveObject, negativeObject, pairId) {
@@ -6899,16 +7377,17 @@
             const centerY = simRect.height / 2 - 50;
             
             obj1.style.position = 'absolute';
-            obj1.style.left = (centerX - 40) + 'px';
+            obj1.style.left = (centerX - 80) + 'px';
             obj1.style.top = centerY + 'px';
             
             obj2.style.position = 'absolute';
-            obj2.style.left = (centerX + 40) + 'px';
+            obj2.style.left = (centerX + 80) + 'px';
             obj2.style.top = centerY + 'px';
             
             // Start rubbing effect
             setTimeout(() => {
                 triggerContinuousRubbingEffect(obj1, obj2);
+                try { soundManager.playRub(); } catch(e){}
             }, 500);
         }
 
@@ -6926,6 +7405,7 @@
             const endY = (toRect.top + toRect.height/2) - simRect.top;
             
             // Create continuous stream of electrons flowing from positive to negative object
+            try { soundManager.playSpark(); } catch(e){}
             let electronCount = 0;
             const maxElectrons = 20;
             
@@ -7142,7 +7622,10 @@
                 inductionResult.droppedItems = [];
             }
             
-            inductionResult.droppedItems.push({type: type, charge: originalItem.getAttribute('data-charge')});
+            const chargeVal = originalItem ? (originalItem.getAttribute('data-charge') || '0') : '0';
+            // tag the element for later identification
+            try { element.dataset.type = type; element.dataset.charge = chargeVal; } catch(e) {}
+            inductionResult.droppedItems.push({type: type, charge: chargeVal, element: element});
             element.classList.add('real-object-animation');
             
             // Add remove button
@@ -7208,7 +7691,7 @@
             
             element.appendChild(removeBtn);
             
-            // Analyze induction process
+            // Analyze induction process with updated state
             analyzeInductionProcess(inductionResult.droppedItems, fieldViz);
         }
 
@@ -7316,32 +7799,136 @@
             }
         }
 
+        // Induction manager: handles polarization, grounding, removal order and final charge-locking
         function analyzeInductionProcess(items, fieldViz) {
-            const chargedRods = items.filter(item => item.type === 'charged-rod-approach');
-            const conductors = items.filter(item => item.type.includes('conductor') || item.type.includes('electroscope') || item.type.includes('can'));
-            
-            if (chargedRods.length > 0 && conductors.length > 0) {
-                const result = document.createElement('div');
-                result.style.cssText = 'color: #32CD32; font-weight: bold; margin-top: 1rem; text-align: center;';
-                result.innerHTML = `
-                    🧲 Induction in Progress!<br>
-                    Electric field causes charge separation<br>
-                    No direct contact needed<br>
-                    💡 Real example: Lightning rod protection
-                `;
-                fieldViz.parentNode.appendChild(result);
-                
-                // Add charge separation visualization
-                setTimeout(() => {
-                    const separation = document.createElement('div');
-                    separation.className = 'charge-separation';
-                    separation.innerHTML = `
-                        <span class="positive-side">+ + +</span>
-                        <span style="color: white;">|</span>
-                        <span class="negative-side">- - -</span>
-                    `;
-                    fieldViz.parentNode.appendChild(separation);
-                }, 1500);
+            if (!window.inductionState) {
+                window.inductionState = { polarized: false, grounded: false, pendingCharge: null, locked: false, lockedCharge: null };
+            }
+            const state = window.inductionState;
+
+            // Determine presence of objects
+            const rod = items.find(i => i.type && i.type.indexOf('charged-rod') >= 0);
+            const conductor = items.find(i => i.type && (i.type.indexOf('conductor') >= 0 || i.type.indexOf('electroscope') >= 0 || i.type.indexOf('metal-can') >= 0 || i.type.indexOf('neutral-conductor') >= 0));
+            const ground = items.find(i => i.type && (i.type.indexOf('ground') >= 0 || i.type === 'ground-wire' || i.type === 'ground-connection'));
+            const removeGround = items.find(i => i.type === 'remove-ground');
+
+            const parent = fieldViz && fieldViz.parentNode ? fieldViz.parentNode : document.getElementById('inductionDisplay') || document.getElementById('inductionResult');
+
+            // Helper to clear previous helper visuals
+            const clearHelpers = () => {
+                if (!parent) return;
+                const old = parent.querySelectorAll('.induction-helper');
+                old.forEach(n => n.remove());
+            };
+
+            // If a charged rod is near a neutral conductor => polarization (no net charge change)
+            if (rod && conductor && !state.polarized) {
+                state.polarized = true;
+                state.grounded = false;
+                state.locked = false;
+                state.pendingCharge = null;
+
+                clearHelpers();
+                const helper = document.createElement('div');
+                helper.className = 'induction-helper';
+                helper.style.cssText = 'color:#87CEEB;font-weight:700;margin-top:0.7rem;text-align:center;';
+                const rodChargeRaw = (rod.charge || rod.charge === 0) ? String(rod.charge) : (rod.charge === undefined ? '+' : String(rod.charge));
+                const rodPositive = (rodChargeRaw === '+' || rodChargeRaw === 'positive');
+
+                // Show polarization explanation and clear visual split
+                helper.innerHTML = `🧲 Polarization: charges separate within the conductor (no net charge).<br>` +
+                                    (rodPositive ? 'Electrons gather on the side near the + rod (− near, + far).' : 'Electrons are repelled from the side near the − rod (+ near, − far).');
+                parent.appendChild(helper);
+
+                // small separation visual
+                const separation = document.createElement('div');
+                separation.className = 'induction-helper';
+                separation.style.cssText = 'display:flex;justify-content:center;gap:1rem;margin-top:0.6rem;font-weight:800;color:#FFD700;';
+                if (rodPositive) {
+                    separation.innerHTML = `<span style="color:#87CEEB;">− − − (near)</span><span style="color:white;">|</span><span style="color:#FF6B6B;">+ + + (far)</span>`;
+                } else {
+                    separation.innerHTML = `<span style="color:#FF6B6B;">+ + + (near)</span><span style="color:white;">|</span><span style="color:#87CEEB;">− − − (far)</span>`;
+                }
+                parent.appendChild(separation);
+
+                try { if (typeof soundManager !== 'undefined') soundManager.playRub(); } catch(e){}
+            }
+
+            // If grounded while polarized => electrons flow to/from ground (pending net charge)
+            if (state.polarized && ground && !state.grounded) {
+                state.grounded = true;
+                // pending charge is opposite of rod
+                const rodObj = rod;
+                const rodChargeRaw = (rodObj && (rodObj.charge || rodObj.charge === 0)) ? String(rodObj.charge) : '+';
+                const rodPositive = (rodChargeRaw === '+' || rodChargeRaw === 'positive');
+                state.pendingCharge = rodPositive ? 'negative' : 'positive';
+
+                clearHelpers();
+                const g = document.createElement('div');
+                g.className = 'induction-helper';
+                g.style.cssText = 'color:#32CD32;font-weight:800;margin-top:0.6rem;text-align:center;';
+                g.innerHTML = `🌍 Ground connected: electrons ${state.pendingCharge === 'negative' ? 'flow from ground into conductor' : 'flow from conductor to ground'} (while rod is present).`;
+                parent.appendChild(g);
+
+                // small animation marker
+                const flow = document.createElement('div');
+                flow.className = 'induction-helper';
+                flow.style.cssText = 'text-align:center;color:#87CEEB;margin-top:0.4rem;';
+                flow.innerHTML = state.pendingCharge === 'negative' ? '⬇️ ground → conductor' : '⬆️ conductor → ground';
+                parent.appendChild(flow);
+                try { if (typeof soundManager !== 'undefined') soundManager.playSpark(); } catch(e){}
+            }
+
+            // If remove-ground is dropped while grounded => lock in the pending charge (ground removed before rod)
+            if (state.grounded && removeGround) {
+                // lock in
+                state.grounded = false;
+                state.locked = true;
+                state.lockedCharge = state.pendingCharge;
+
+                clearHelpers();
+                const lock = document.createElement('div');
+                lock.className = 'induction-helper';
+                lock.style.cssText = 'color:#FFD700;font-weight:900;margin-top:0.6rem;text-align:center;';
+                lock.innerHTML = `🔒 Ground removed — charge imbalance locked: conductor will be <strong>${state.lockedCharge.toUpperCase()}</strong> once the rod is removed.`;
+                parent.appendChild(lock);
+                try { if (typeof soundManager !== 'undefined') soundManager.playClick(); } catch(e){}
+            }
+
+            // If rod removed while we have a locked charge => finalize (conductor remains charged)
+            if (!rod && state.locked && conductor) {
+                // finalize result
+                clearHelpers();
+                const finished = document.createElement('div');
+                finished.className = 'induction-helper';
+                finished.style.cssText = 'color:#32CD32;font-weight:900;margin-top:0.6rem;text-align:center;';
+                finished.innerHTML = `✅ Induction complete — conductor is now <strong>${state.lockedCharge.toUpperCase()}</strong> (opposite of the rod).`;
+                parent.appendChild(finished);
+
+                // If we have a DOM element for the conductor, update its appearance/metadata
+                try {
+                    const conductorEl = (conductor && conductor.element) ? conductor.element : (parent.querySelector('[data-type*="conductor"]') || parent.querySelector('.induction-item'));
+                    if (conductorEl) {
+                        conductorEl.dataset.charge = state.lockedCharge === 'negative' ? '-' : (state.lockedCharge === 'positive' ? '+' : '0');
+                        conductorEl.classList.add('induced-locked');
+                        // update inner label to show final charge
+                        const label = document.createElement('div');
+                        label.style.cssText = 'margin-top:6px;font-weight:800;color:#87CEEB;';
+                        label.innerHTML = `Final charge: <span style="color:${state.lockedCharge==='negative'?'#87CEEB':'#FF6B6B'}">${state.lockedCharge==='negative'?'-':(state.lockedCharge==='positive'?'+':'0')}</span>`;
+                        conductorEl.appendChild(label);
+                    }
+                } catch(e) {}
+
+                // reset induction state after finalizing
+                window.inductionState = { polarized: false, grounded: false, pendingCharge: null, locked: false, lockedCharge: null };
+                try { if (typeof soundManager !== 'undefined') soundManager.playZap(); } catch(e){}
+            }
+
+            // If rod removed and no lock occurred -> clear polarization
+            if (!rod && !state.locked) {
+                // simply clear helpers and reset
+                clearHelpers();
+                window.inductionState = { polarized: false, grounded: false, pendingCharge: null, locked: false, lockedCharge: null };
             }
         }
 
@@ -7527,6 +8114,7 @@
             const chargingResults = document.getElementById('chargingResults');
             const electronTransferArea = document.getElementById('electronTransferArea');
             
+            try { soundManager.playReset(); } catch(e){}
             // Clear all objects
             simulationArea.innerHTML = '<div style="color: #FFD700; font-style: italic; font-size: 1.2rem; width: 100%; text-align: center;">Drop objects here to start rubbing simulation</div>';
             chargingResults.innerHTML = '';
@@ -7540,6 +8128,7 @@
             const conductionSimulationArea = document.getElementById('conductionSimulationArea');
             const conductionResults = document.getElementById('conductionResults');
             
+            try { soundManager.playReset(); } catch(e){}
             // Clear all objects with animation
             if (conductionSimulationArea.droppedItems) {
                 conductionSimulationArea.droppedItems.forEach(item => {
@@ -7877,6 +8466,7 @@
         function performConduction(chargedObject, neutralObject) {
             // Show contact spark effect
             createConductionSpark(chargedObject, neutralObject);
+            try { if (typeof soundManager !== 'undefined') soundManager.playZap(); } catch(e){}
             
             // Show electron flow animation
             showConductionElectronFlow(chargedObject, neutralObject);
@@ -7885,10 +8475,10 @@
             const originalCharge = chargedObject.dataset.charge;
             
             setTimeout(() => {
-                // Both objects now have the same charge as the original charged object
+                // Transfer: neutral object adopts the charged object's net charge
                 neutralObject.dataset.charge = originalCharge;
                 updateConductionObjectAppearance(neutralObject, originalCharge);
-                
+
                 // Update results display
                 displayConductionResults(chargedObject, neutralObject, originalCharge);
             }, 1500);
@@ -7937,6 +8527,7 @@
                 z-index: 999;
             `;
             conductionSimulationArea.appendChild(spark);
+            try { soundManager.playSpark(); } catch(e){}
             
             // Remove spark after animation
             setTimeout(() => {
@@ -8132,16 +8723,17 @@
             const centerY = simRect.height / 2 - 50;
             
             chargedObject.style.position = 'absolute';
-            chargedObject.style.left = (centerX - 40) + 'px';
+            chargedObject.style.left = (centerX - 80) + 'px';
             chargedObject.style.top = centerY + 'px';
             
             neutralObject.style.position = 'absolute';
-            neutralObject.style.left = (centerX + 40) + 'px';
+            neutralObject.style.left = (centerX + 80) + 'px';
             neutralObject.style.top = centerY + 'px';
             
             // Trigger conduction effect
             setTimeout(() => {
                 triggerConductionEffect(chargedObject, neutralObject);
+                try { soundManager.playZap(); } catch(e){}
             }, 500);
         }
 
@@ -8170,6 +8762,7 @@
             const inductionZone = document.getElementById('inductionZone');
             const droppedItems = inductionZone.querySelectorAll('.dropped-item');
             
+            try { soundManager.playReset(); } catch(e){}
             droppedItems.forEach(item => {
                 item.style.animation = 'dropAnimation 0.3s ease-out reverse';
                 setTimeout(() => {
